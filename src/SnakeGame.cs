@@ -1,135 +1,135 @@
-using Microsoft.Xna.Framework;
+п»їusing Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс описывает игру Змейка
+	/// РљР»Р°СЃСЃ РѕРїРёСЃС‹РІР°РµС‚ РёРіСЂСѓ Р—РјРµР№РєР°
 	/// </summary>
 	public class SnakeGame: Game
 		{
 		/////////////////////////////////////////////////////////////////////////////////
-		// ПЕРЕМЕННЫЕ
+		// РџР•Р Р•РњР•РќРќР«Р•
 
-		// Драйвера игры
-		private GraphicsDeviceManager graphics;             // Графика
-		private SpriteBatch spriteBatch;                    // Sprite-отрисовка
-		private KeyboardState keyboardState;                // Состояние клавиатуры
-		private SpriteFont defFont, bigFont, midFont;       // Шрифты
-		private Random rnd = new Random ();                 // ГСЧ
+		// Р”СЂР°Р№РІРµСЂР° РёРіСЂС‹
+		private GraphicsDeviceManager graphics;             // Р“СЂР°С„РёРєР°
+		private SpriteBatch spriteBatch;                    // Sprite-РѕС‚СЂРёСЃРѕРІРєР°
+		private KeyboardState keyboardState;                // РЎРѕСЃС‚РѕСЏРЅРёРµ РєР»Р°РІРёР°С‚СѓСЂС‹
+		private SpriteFont defFont, bigFont, midFont;       // РЁСЂРёС„С‚С‹
+		private Random rnd = new Random ();                 // Р“РЎР§
 
-		// Размеры окна (игровое поле -  32 x 24 клеток; соотношение вынужденное, из-за fullscreen)
+		// Р Р°Р·РјРµСЂС‹ РѕРєРЅР° (РёРіСЂРѕРІРѕРµ РїРѕР»Рµ -  32 x 24 РєР»РµС‚РѕРє; СЃРѕРѕС‚РЅРѕС€РµРЅРёРµ РІС‹РЅСѓР¶РґРµРЅРЅРѕРµ, РёР·-Р·Р° fullscreen)
 
 		/// <summary>
-		/// Ширина окна
+		/// РЁРёСЂРёРЅР° РѕРєРЅР°
 		/// </summary>
 		public const int BackBufferWidth = Tile.Width * 32;
 
 		/// <summary>
-		/// Высота окна
+		/// Р’С‹СЃРѕС‚Р° РѕРєРЅР°
 		/// </summary>
 		public const int BackBufferHeight = Tile.Height * 24;
 
-		// Основное состояние игры (начало|игра|конец)
-		private GameStatus gameStatus = GameStatus.Start;   // Начальный статус игры (статусы перечислены в Auxilitary.cs)
+		// РћСЃРЅРѕРІРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РёРіСЂС‹ (РЅР°С‡Р°Р»Рѕ|РёРіСЂР°|РєРѕРЅРµС†)
+		private GameStatus gameStatus = GameStatus.Start;
+		// РќР°С‡Р°Р»СЊРЅС‹Р№ СЃС‚Р°С‚СѓСЃ РёРіСЂС‹ (СЃС‚Р°С‚СѓСЃС‹ РїРµСЂРµС‡РёСЃР»РµРЅС‹ РІ Auxilitary.cs)
 
-		// Описатели уровня и окна сообщений
-		private SnakeLevel level;                           // Класс-описатель уровня
-		private int levelNumber = 0;                        // Номер текущего уровня
-		private bool isWorking = false;                     // Флаг паузы
-		private Texture2D startBack, snakeImg;              // Разные изображения на старте
-		private Vector2 startSnakeVector;                   // Змейка на старте
+		// РћРїРёСЃР°С‚РµР»Рё СѓСЂРѕРІРЅСЏ Рё РѕРєРЅР° СЃРѕРѕР±С‰РµРЅРёР№
+		private SnakeLevel level;                           // РљР»Р°СЃСЃ-РѕРїРёСЃР°С‚РµР»СЊ СѓСЂРѕРІРЅСЏ
+		private int levelNumber = 0;                        // РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅСЏ
+		private bool isWorking = false;                     // Р¤Р»Р°Рі РїР°СѓР·С‹
+		private Texture2D startBack, snakeImg;              // Р Р°Р·РЅС‹Рµ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° СЃС‚Р°СЂС‚Рµ
+		private Vector2 startSnakeVector;                   // Р—РјРµР№РєР° РЅР° СЃС‚Р°СЂС‚Рµ
 
-		// Текущая позиция яблока и его объекты анимации
-		private Vector2 applePosition;                      // Текущая позиция
-		private Animation[] appleAnimation;                 // Изображение анимации
-		private AnimationPlayer appleAnimator;              // Объект-анимация
+		// РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ СЏР±Р»РѕРєР° Рё РµРіРѕ РѕР±СЉРµРєС‚С‹ Р°РЅРёРјР°С†РёРё
+		private Vector2 applePosition;                      // РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ
+		private Animation[] appleAnimation;                 // РР·РѕР±СЂР°Р¶РµРЅРёРµ Р°РЅРёРјР°С†РёРё
+		private AnimationPlayer appleAnimator;              // РћР±СЉРµРєС‚-Р°РЅРёРјР°С†РёСЏ
 
-		// Текущая позиция секций змейки, текущее направление движения
-		// и объекты анимации головы и тела
-		private List<Vector2> playerPosition = new List<Vector2> ();        // List позиций всех элементов змейки
-		private Vector2 playerTo;                                           // Направление движения змейки
+		// РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ СЃРµРєС†РёР№ Р·РјРµР№РєРё, С‚РµРєСѓС‰РµРµ РЅР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ
+		// Рё РѕР±СЉРµРєС‚С‹ Р°РЅРёРјР°С†РёРё РіРѕР»РѕРІС‹ Рё С‚РµР»Р°
+		private List<Vector2> playerPosition = new List<Vector2> ();        // List РїРѕР·РёС†РёР№ РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ Р·РјРµР№РєРё
+		private Vector2 playerTo;                                           // РќР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ Р·РјРµР№РєРё
 		private Animation headAnimation, headRushAnimation, bodyAnimation;
 		private AnimationPlayer headAnimator, bodyAnimator;
 
-		// Фон сообщений
+		// Р¤РѕРЅ СЃРѕРѕР±С‰РµРЅРёР№
 		private Animation messageBack;
 		private AnimationPlayer messageBackAnimator;
 
-		// Звуковые эффекты и их параметры
-		private SoundEffect SCompleted, SFailed,            // Победа, поражение
-							SStart, SStop, SOnOff;          // Старт, пауза, звук off/on
-		private SoundEffect[] SAte;                         // Разные звуки съедения
-		private bool isSound = true, isMusic = true;        // Звук и музыка в игре on/off
+		// Р—РІСѓРєРѕРІС‹Рµ СЌС„С„РµРєС‚С‹ Рё РёС… РїР°СЂР°РјРµС‚СЂС‹
+		private SoundEffect SCompleted, SFailed,            // РџРѕР±РµРґР°, РїРѕСЂР°Р¶РµРЅРёРµ
+							SStart, SStop, SOnOff;          // РЎС‚Р°СЂС‚, РїР°СѓР·Р°, Р·РІСѓРє off/on
+		private SoundEffect[] SAte;                         // Р Р°Р·РЅС‹Рµ Р·РІСѓРєРё СЃСЉРµРґРµРЅРёСЏ
+		private bool isSound = true, isMusic = true;        // Р—РІСѓРє Рё РјСѓР·С‹РєР° РІ РёРіСЂРµ on/off
 
-		// Скорость змейки, количество яблок на уровне и параметр Alive
+		// РЎРєРѕСЂРѕСЃС‚СЊ Р·РјРµР№РєРё, РєРѕР»РёС‡РµСЃС‚РІРѕ СЏР±Р»РѕРє РЅР° СѓСЂРѕРІРЅРµ Рё РїР°СЂР°РјРµС‚СЂ Alive
 		private float speed = 0;
 		private int applesQuantity = 0;
 		private bool isAlive = true;
 
-		// Камень, на котором произошло столкновение, и коэффициенты предельного расстояния нестолкновения
+		// РљР°РјРµРЅСЊ, РЅР° РєРѕС‚РѕСЂРѕРј РїСЂРѕРёР·РѕС€Р»Рѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ, Рё РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РїСЂРµРґРµР»СЊРЅРѕРіРѕ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РЅРµСЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ
 		private Vector2 collaptedOn;
 		private const float StoneOffs = 0.25f,
 							BodyOffs = Tile.Width * 0.4f,
 							AppleOffs = Tile.Width * 0.6f;
 
-		// Очки
-		private int score = 0,                              // Выигрыш
-					currentScore = 0,                       // Очки в розыгрыше
-					ateApples = 0;                          // Съедено яблок за всю игру
-		private const int SMult = 10;                       // Множитель для очков
+		// РћС‡РєРё
+		private int score = 0,                              // Р’С‹РёРіСЂС‹С€
+					currentScore = 0,                       // РћС‡РєРё РІ СЂРѕР·С‹РіСЂС‹С€Рµ
+					eatenApples = 0;                        // РЎСЉРµРґРµРЅРѕ СЏР±Р»РѕРє Р·Р° РІСЃСЋ РёРіСЂСѓ
+		private const int SMult = 10;                       // РњРЅРѕР¶РёС‚РµР»СЊ РґР»СЏ РѕС‡РєРѕРІ
 
-		// Флаги отображения сообщений
-		private bool showLevelMsg = false,                  // Сообщение о начале уровня
-					 showLoseMsg = false,                   // Сообщение о прохождении уровня
-					 showWinMsg = false,                    // Сообщение о проигрыше
-					 showExitMsg = false;                   // Подтверждение выхода
+		// Р¤Р»Р°РіРё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ СЃРѕРѕР±С‰РµРЅРёР№
+		private bool showLevelMsg = false,                  // РЎРѕРѕР±С‰РµРЅРёРµ Рѕ РЅР°С‡Р°Р»Рµ СѓСЂРѕРІРЅСЏ
+					 showLoseMsg = false,                   // РЎРѕРѕР±С‰РµРЅРёРµ Рѕ РїСЂРѕС…РѕР¶РґРµРЅРёРё СѓСЂРѕРІРЅСЏ
+					 showWinMsg = false,                    // РЎРѕРѕР±С‰РµРЅРёРµ Рѕ РїСЂРѕРёРіСЂС‹С€Рµ
+					 showExitMsg = false;                   // РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ РІС‹С…РѕРґР°
 
-		// Параметры компаса
-		private Texture2D compas;                       // Текстура
-		private float compasTurn = 0.0f;                // Угол поворота компаса
-		private Rectangle compasPosition, compasSize;   // Позиция и размер компаса
-		private Vector2 compasOffs;                     // Координаты предыдущего положения головы
+		// РџР°СЂР°РјРµС‚СЂС‹ РєРѕРјРїР°СЃР°
+		private Texture2D compas;                       // РўРµРєСЃС‚СѓСЂР°
+		private float compasTurn = 0.0f;                // РЈРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РєРѕРјРїР°СЃР°
+		private Rectangle compasPosition, compasSize;   // РџРѕР·РёС†РёСЏ Рё СЂР°Р·РјРµСЂ РєРѕРјРїР°СЃР°
+		private Vector2 compasOffs;                     // РљРѕРѕСЂРґРёРЅР°С‚С‹ РїСЂРµРґС‹РґСѓС‰РµРіРѕ РїРѕР»РѕР¶РµРЅРёСЏ РіРѕР»РѕРІС‹
 
-		// Согласователи клавиатуры
-		private int kbdDelay = 1,           // Пауза в Update-итерациях перед следующим опросом клавиатуры
-					kbdDelayTimer;          // Таймер для delay
-		private const int KbdDefDelay = 25; // Базовый delay при нажатии клавиши
+		// РЎРѕРіР»Р°СЃРѕРІР°С‚РµР»Рё РєР»Р°РІРёР°С‚СѓСЂС‹
+		private int kbdDelay = 1,           // РџР°СѓР·Р° РІ Update-РёС‚РµСЂР°С†РёСЏС… РїРµСЂРµРґ СЃР»РµРґСѓСЋС‰РёРј РѕРїСЂРѕСЃРѕРј РєР»Р°РІРёР°С‚СѓСЂС‹
+					kbdDelayTimer;          // РўР°Р№РјРµСЂ РґР»СЏ delay
+		private const int KbdDefDelay = 25; // Р‘Р°Р·РѕРІС‹Р№ delay РїСЂРё РЅР°Р¶Р°С‚РёРё РєР»Р°РІРёС€Рё
 
 		/// <summary>
-		/// Конструктор. Инициализирует игру Змейка
+		/// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ. РРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ РёРіСЂСѓ Р—РјРµР№РєР°
 		/// </summary>
 		public SnakeGame ()
 			{
-			// Создание "окна" заданного размера и переход в полноэкранный режим
+			// РЎРѕР·РґР°РЅРёРµ "РѕРєРЅР°" Р·Р°РґР°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР° Рё РїРµСЂРµС…РѕРґ РІ РїРѕР»РЅРѕСЌРєСЂР°РЅРЅС‹Р№ СЂРµР¶РёРј
 			graphics = new GraphicsDeviceManager (this);
 			graphics.PreferredBackBufferWidth = BackBufferWidth;
 			graphics.PreferredBackBufferHeight = BackBufferHeight;
 			graphics.ToggleFullScreen ();
 
-			// Задание content-директории игры
+			// Р—Р°РґР°РЅРёРµ content-РґРёСЂРµРєС‚РѕСЂРёРё РёРіСЂС‹
 			Content.RootDirectory = "Content/Snake";
 			}
 
 		/// <summary>
-		/// ИНИЦИАЛИЗАЦИЯ ОКНА
-		/// Функция выполняется один раз за игру (при её запуске).
-		/// Здесь располагаются все инициализации и начальные значения
+		/// РРќРР¦РРђР›РР—РђР¦РРЇ РћРљРќРђ
+		/// Р¤СѓРЅРєС†РёСЏ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРґРёРЅ СЂР°Р· Р·Р° РёРіСЂСѓ (РїСЂРё РµС‘ Р·Р°РїСѓСЃРєРµ).
+		/// Р—РґРµСЃСЊ СЂР°СЃРїРѕР»Р°РіР°СЋС‚СЃСЏ РІСЃРµ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё Рё РЅР°С‡Р°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 		/// </summary>
 		protected override void Initialize ()
 			{
-			// НАСТРОЙКА АППАРАТА ПРОРИСОВКИ
+			// РќРђРЎРўР РћР™РљРђ РђРџРџРђР РђРўРђ РџР РћР РРЎРћР’РљР
 			//this.IsMouseVisible = true;
 			spriteBatch = new SpriteBatch (GraphicsDevice);
 
-			// СОЗДАНИЕ ОБЪЕКТОВ АНИМАЦИИ
-			// Разные виды яблок
+			// РЎРћР—Р”РђРќРР• РћР‘РЄР•РљРўРћР’ РђРќРРњРђР¦РР
+			// Р Р°Р·РЅС‹Рµ РІРёРґС‹ СЏР±Р»РѕРє
 			appleAnimation = new Animation[]    {
 				new Animation (Content.Load<Texture2D> ("Tiles/Apple1"), Tile.Width, 0.1f, true),
 				new Animation (Content.Load<Texture2D> ("Tiles/Apple2"), Tile.Width, 0.1f, true),
@@ -142,20 +142,20 @@ namespace RD_AAOW
 				new Animation (Content.Load<Texture2D> ("Tiles/Apple9"), Tile.Width, 0.1f, true)
 												};
 
-			// Голова при столкновении и движении
+			// Р“РѕР»РѕРІР° РїСЂРё СЃС‚РѕР»РєРЅРѕРІРµРЅРёРё Рё РґРІРёР¶РµРЅРёРё
 			headAnimation = new Animation (Content.Load<Texture2D> ("Tiles/Part_Head"), Tile.Width, 0.1f, true);
 			headRushAnimation = new Animation (Content.Load<Texture2D> ("Tiles/Part_HeadRush"), Tile.Width, 0.1f, true);
-			headAnimator.PlayAnimation (headAnimation);         // По умолчанию - анимация при движении
+			headAnimator.PlayAnimation (headAnimation);         // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ - Р°РЅРёРјР°С†РёСЏ РїСЂРё РґРІРёР¶РµРЅРёРё
 
-			// Тело змейки
+			// РўРµР»Рѕ Р·РјРµР№РєРё
 			bodyAnimation = new Animation (Content.Load<Texture2D> ("Tiles/Part_Part"), Tile.Width, 0.1f, false);
 			bodyAnimator.PlayAnimation (bodyAnimation);
 
-			// Фон сообщений
+			// Р¤РѕРЅ СЃРѕРѕР±С‰РµРЅРёР№
 			messageBack = new Animation (Content.Load<Texture2D> ("Messages/MessageBack"), 512, 0.1f, true);
 			messageBackAnimator.PlayAnimation (messageBack);
 
-			// СОЗДАНИЕ ЗВУКОВЫХ ЭФФЕКТОВ
+			// РЎРћР—Р”РђРќРР• Р—Р’РЈРљРћР’Р«РҐ Р­Р¤Р¤Р•РљРўРћР’
 			SCompleted = Content.Load<SoundEffect> ("Sounds/Completed");
 			SFailed = Content.Load<SoundEffect> ("Sounds/Failed");
 			SOnOff = Content.Load<SoundEffect> ("Sounds/SoundOnOff");
@@ -168,38 +168,38 @@ namespace RD_AAOW
 					Content.Load<SoundEffect> ("Sounds/Ate4")
 										};
 
-			// СОЗДАНИЕ ШРИФТОВ
+			// РЎРћР—Р”РђРќРР• РЁР РР¤РўРћР’
 			defFont = Content.Load<SpriteFont> ("Font/DefFont");
 			bigFont = Content.Load<SpriteFont> ("Font/BigFont");
 			midFont = Content.Load<SpriteFont> ("Font/MidFont");
 
-			// ЗАГРУЗКА ДОПОЛНИТЕЛЬНЫХ ТЕКСТУР
+			// Р—РђР“Р РЈР—РљРђ Р”РћРџРћР›РќРРўР•Р›Р¬РќР«РҐ РўР•РљРЎРўРЈР 
 			startBack = Content.Load<Texture2D> ("Background/StartBack");
 			snakeImg = Content.Load<Texture2D> ("Background/SnakeImg");
 
-			// КОМПАС
+			// РљРћРњРџРђРЎ
 			compas = Content.Load<Texture2D> ("Tiles/Compas");
 			compasPosition = compasSize = new Rectangle (0, 0, compas.Width, compas.Height);
 
-			// ЧТЕНИЕ НАСТРОЕК И РЕЗУЛЬТАТОВ ИГРЫ
+			// Р§РўР•РќРР• РќРђРЎРўР РћР•Рљ Р Р Р•Р—РЈР›Р¬РўРђРўРћР’ РР“Р Р«
 			GameSettings (false);
 
-			// НАСТРОЙКА МУЗЫКИ
+			// РќРђРЎРўР РћР™РљРђ РњРЈР—Р«РљР
 			MediaPlayer.IsRepeating = true;
 			if (isMusic)
 				MediaPlayer.Play (Content.Load<Song> ("Sounds/Music2"));
 
-			// Инициализация
+			// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 			base.Initialize ();
 			}
 
 		/// <summary>
-		/// Метод-обработчик динамических событий игры
+		/// РњРµС‚РѕРґ-РѕР±СЂР°Р±РѕС‚С‡РёРє РґРёРЅР°РјРёС‡РµСЃРєРёС… СЃРѕР±С‹С‚РёР№ РёРіСЂС‹
 		/// </summary>
 		/// <param name="gameTime"></param>
 		protected override void Update (GameTime gameTime)
 			{
-			// Опрос клавиатуры с предотвращением повторов
+			// РћРїСЂРѕСЃ РєР»Р°РІРёР°С‚СѓСЂС‹ СЃ РїСЂРµРґРѕС‚РІСЂР°С‰РµРЅРёРµРј РїРѕРІС‚РѕСЂРѕРІ
 			kbdDelayTimer++;
 			kbdDelayTimer %= kbdDelay;
 			if (kbdDelayTimer == 0)
@@ -216,13 +216,13 @@ namespace RD_AAOW
 				}
 			KeyboardMoveProc ();
 
-			// В ЗАВИСИМОСТИ ОТ СОСТОЯНИЯ ИГРЫ
+			// Р’ Р—РђР’РРЎРРњРћРЎРўР РћРў РЎРћРЎРўРћРЇРќРРЇ РР“Р Р«
 			switch (gameStatus)
 				{
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Start:
 				case GameStatus.Help:
-					// Движение по синусоиде
+					// Р”РІРёР¶РµРЅРёРµ РїРѕ СЃРёРЅСѓСЃРѕРёРґРµ
 					startSnakeVector.X += 2;
 					startSnakeVector.Y = BackBufferHeight - snakeImg.Height / 2 - 190 +
 						12 * (float)Math.Sin (0.007 * startSnakeVector.X + 0.5);
@@ -234,7 +234,7 @@ namespace RD_AAOW
 
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Playing:
-					// Модуль движения (в случае IsAlive)
+					// РњРѕРґСѓР»СЊ РґРІРёР¶РµРЅРёСЏ (РІ СЃР»СѓС‡Р°Рµ IsAlive)
 					if (isAlive && isWorking)
 						{
 						playerPosition[0] += playerTo;
@@ -242,77 +242,77 @@ namespace RD_AAOW
 						for (int n = 1; n < playerPosition.Count; n++)
 							{
 							//////////////////////////////////////////////////////////////////////
-							// ФОРМУЛА ПЛАВНОГО ДВИЖЕНИЯ ЗМЕЙКИ
+							// Р¤РћР РњРЈР›Рђ РџР›РђР’РќРћР“Рћ Р”Р’РР–Р•РќРРЇ Р—РњР•Р™РљР
 							playerPosition[n] += speed * (playerPosition[n - 1] - playerPosition[n]) / Tile.Size;
 							//////////////////////////////////////////////////////////////////////
 
-							// Если часть тела пытается залезть на камень, она
-							// отодвигается от него ровно в противоположном направлении
+							// Р•СЃР»Рё С‡Р°СЃС‚СЊ С‚РµР»Р° РїС‹С‚Р°РµС‚СЃСЏ Р·Р°Р»РµР·С‚СЊ РЅР° РєР°РјРµРЅСЊ, РѕРЅР°
+							// РѕС‚РѕРґРІРёРіР°РµС‚СЃСЏ РѕС‚ РЅРµРіРѕ СЂРѕРІРЅРѕ РІ РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё
 							if (IsCollapted (playerPosition[n], false))
 								playerPosition[n] += new Vector2 (Math.Sign (playerPosition[n].X - collaptedOn.X),
 									Math.Sign (playerPosition[n].Y - collaptedOn.Y));
 							}
 						}
 
-					// Новый уровень с паузой (выигрыш)
+					// РќРѕРІС‹Р№ СѓСЂРѕРІРµРЅСЊ СЃ РїР°СѓР·РѕР№ (РІС‹РёРіСЂС‹С€)
 					if (currentScore == SMult * applesQuantity)
 						{
-						// Звук
+						// Р—РІСѓРє
 						MediaPlayer.Stop ();
 						if (isSound)
 							SCompleted.Play ();
 
-						// Пересчёт очков
+						// РџРµСЂРµСЃС‡С‘С‚ РѕС‡РєРѕРІ
 						score += currentScore;
 						currentScore = 0;
 
-						// Отображение сообщения
+						// РћС‚РѕР±СЂР°Р¶РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ
 						showWinMsg = true;
 
-						// Запуск нового уровня с паузой
+						// Р—Р°РїСѓСЃРє РЅРѕРІРѕРіРѕ СѓСЂРѕРІРЅСЏ СЃ РїР°СѓР·РѕР№
 						isAlive = isWorking = false;
 
-						// Перезапуск уровня произойдёт по нажатию клавиши
+						// РџРµСЂРµР·Р°РїСѓСЃРє СѓСЂРѕРІРЅСЏ РїСЂРѕРёР·РѕР№РґС‘С‚ РїРѕ РЅР°Р¶Р°С‚РёСЋ РєР»Р°РІРёС€Рё
 						}
 
-					// Проверка столкновений
+					// РџСЂРѕРІРµСЂРєР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёР№
 					if (IsCollapted (playerPosition[0], true) && isAlive)
 						{
-						// Звук
+						// Р—РІСѓРє
 						MediaPlayer.Stop ();
 						if (isSound)
 							SFailed.Play ();
 
-						// Переключение состояния игры
+						// РџРµСЂРµРєР»СЋС‡РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂС‹
 						isAlive = isWorking = false;
 						levelNumber--;
 						headAnimator.PlayAnimation (headRushAnimation);
 
-						// Пересчёт очков
+						// РџРµСЂРµСЃС‡С‘С‚ РѕС‡РєРѕРІ
 						score += currentScore / SMult - applesQuantity;
 						currentScore = 0;
 
-						// Отображение сообщения
+						// РћС‚РѕР±СЂР°Р¶РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ
 						showLoseMsg = true;
 
-						// Перезапуск уровня произойдёт по нажатию клавиши Space
+						// РџРµСЂРµР·Р°РїСѓСЃРє СѓСЂРѕРІРЅСЏ РїСЂРѕРёР·РѕР№РґС‘С‚ РїРѕ РЅР°Р¶Р°С‚РёСЋ РєР»Р°РІРёС€Рё Space
 						}
 
-					// Новое яблоко
+					// РќРѕРІРѕРµ СЏР±Р»РѕРєРѕ
 					if (IsAte ())
 						{
-						// Звук
+						// Р—РІСѓРє
 						if (isSound)
 							SAte[rnd.Next (SAte.Length)].Play ();
 
-						// Генерация нового яблока (если игра не окончена)
+						// Р“РµРЅРµСЂР°С†РёСЏ РЅРѕРІРѕРіРѕ СЏР±Р»РѕРєР° (РµСЃР»Рё РёРіСЂР° РЅРµ РѕРєРѕРЅС‡РµРЅР°)
 						NewApple ();
 
-						// Наращивание текущего числа очков и всего съеденных ябок
+						// РќР°СЂР°С‰РёРІР°РЅРёРµ С‚РµРєСѓС‰РµРіРѕ С‡РёСЃР»Р° РѕС‡РєРѕРІ Рё РІСЃРµРіРѕ СЃСЉРµРґРµРЅРЅС‹С… СЏР±РѕРє
 						currentScore += SMult;
-						ateApples++;
+						eatenApples++;
 
-						// Добавление части змейки
+						// Р”РѕР±Р°РІР»РµРЅРёРµ С‡Р°СЃС‚Рё Р·РјРµР№РєРё
 						playerPosition.Add (playerPosition[playerPosition.Count - 1]);
 						}
 
@@ -320,21 +320,21 @@ namespace RD_AAOW
 					//////////////////////////////////////////////////////////////////
 				}
 
-			// Обновление игры
+			// РћР±РЅРѕРІР»РµРЅРёРµ РёРіСЂС‹
 			base.Update (gameTime);
 			}
 
 		/// <summary>
-		/// ОБРАБОТКА СОБЫТИЙ КЛАВИАТУРЫ
-		/// Низкоскоростные события
+		/// РћР‘Р РђР‘РћРўРљРђ РЎРћР‘Р«РўРР™ РљР›РђР’РРђРўРЈР Р«
+		/// РќРёР·РєРѕСЃРєРѕСЂРѕСЃС‚РЅС‹Рµ СЃРѕР±С‹С‚РёСЏ
 		/// </summary>
 		private bool KeyboardProc ()
 			{
-			// Запрос к клавиатуре
+			// Р—Р°РїСЂРѕСЃ Рє РєР»Р°РІРёР°С‚СѓСЂРµ
 			keyboardState = Keyboard.GetState ();
 
-			// В НЕЗАВИСИМОСТИ ОТ СОСТОЯНИЯ ИГРЫ
-			// Настройки звука
+			// Р’ РќР•Р—РђР’РРЎРРњРћРЎРўР РћРў РЎРћРЎРўРћРЇРќРРЇ РР“Р Р«
+			// РќР°СЃС‚СЂРѕР№РєРё Р·РІСѓРєР°
 			if (!showExitMsg)
 				{
 				if (keyboardState.IsKeyDown (Keys.S))       // Sound on/off
@@ -342,7 +342,7 @@ namespace RD_AAOW
 					isSound = !isSound;
 					SOnOff.Play ();
 
-					// Была нажата клавиша
+					// Р‘С‹Р»Р° РЅР°Р¶Р°С‚Р° РєР»Р°РІРёС€Р°
 					return true;
 					}
 
@@ -364,16 +364,16 @@ namespace RD_AAOW
 					}
 				}
 
-			// В ЗАВИСИМОСТИ ОТ СОСТОЯНИЯ ИГРЫ
+			// Р’ Р—РђР’РРЎРРњРћРЎРўР РћРў РЎРћРЎРўРћРЇРќРРЇ РР“Р Р«
 			switch (gameStatus)
 				{
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Start:
-					// Немедленный выход
+					// РќРµРјРµРґР»РµРЅРЅС‹Р№ РІС‹С…РѕРґ
 					if (keyboardState.IsKeyDown (Keys.Escape))
 						this.Exit ();
 
-					// Справка
+					// РЎРїСЂР°РІРєР°
 					if (keyboardState.IsKeyDown (Keys.F1))
 						{
 						gameStatus = GameStatus.Help;
@@ -381,13 +381,13 @@ namespace RD_AAOW
 						return true;
 						}
 
-					// Переход далее
+					// РџРµСЂРµС…РѕРґ РґР°Р»РµРµ
 					if (keyboardState.IsKeyDown (Keys.Space))
 						{
-						// Переключение параметров
+						// РџРµСЂРµРєР»СЋС‡РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ
 						gameStatus = GameStatus.Playing;
 
-						// Загрузка уровня
+						// Р—Р°РіСЂСѓР·РєР° СѓСЂРѕРІРЅСЏ
 						levelNumber--;
 						LoadNextLevel ();
 
@@ -398,7 +398,7 @@ namespace RD_AAOW
 
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Help:
-					// Возврат
+					// Р’РѕР·РІСЂР°С‚
 					if (keyboardState.IsKeyDown (Keys.Escape))
 						{
 						gameStatus = GameStatus.Start;
@@ -411,8 +411,8 @@ namespace RD_AAOW
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Playing:
 
-					// Нажатие паузы и продолжения
-					if (!showExitMsg)           // Нельзя ничего делать, если появилось сообщение о выходе
+					// РќР°Р¶Р°С‚РёРµ РїР°СѓР·С‹ Рё РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ
+					if (!showExitMsg)           // РќРµР»СЊР·СЏ РЅРёС‡РµРіРѕ РґРµР»Р°С‚СЊ, РµСЃР»Рё РїРѕСЏРІРёР»РѕСЃСЊ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РІС‹С…РѕРґРµ
 						{
 						if (isAlive && keyboardState.IsKeyDown (Keys.Space))    // Pause
 							{
@@ -435,7 +435,7 @@ namespace RD_AAOW
 							return true;
 							}
 
-						// Нажатие клавиши продолжения
+						// РќР°Р¶Р°С‚РёРµ РєР»Р°РІРёС€Рё РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ
 						if (keyboardState.IsKeyDown (Keys.Space) && !isWorking && !isAlive)
 							{
 							LoadNextLevel ();
@@ -443,16 +443,16 @@ namespace RD_AAOW
 							return true;
 							}
 
-						// Проверка на выход
+						// РџСЂРѕРІРµСЂРєР° РЅР° РІС‹С…РѕРґ
 						if (keyboardState.IsKeyDown (Keys.Escape))
 							{
-							// Пауза
+							// РџР°СѓР·Р°
 							isWorking = false;
 
-							// Сообщение
+							// РЎРѕРѕР±С‰РµРЅРёРµ
 							showExitMsg = true;
 
-							// Звук
+							// Р—РІСѓРє
 							if (isSound)
 								SOnOff.Play ();
 
@@ -460,14 +460,14 @@ namespace RD_AAOW
 							}
 						}
 
-					// Попытка выхода
+					// РџРѕРїС‹С‚РєР° РІС‹С…РѕРґР°
 					if (showExitMsg)
 						{
-						// Выход из игры (yes)
+						// Р’С‹С…РѕРґ РёР· РёРіСЂС‹ (yes)
 						if (keyboardState.IsKeyDown (Keys.Y))
 							this.Exit ();
 
-						// Продолжение (back)
+						// РџСЂРѕРґРѕР»Р¶РµРЅРёРµ (back)
 						if (keyboardState.IsKeyDown (Keys.N))
 							{
 							showExitMsg = false;
@@ -482,7 +482,7 @@ namespace RD_AAOW
 				case GameStatus.Finish:
 					if (keyboardState.IsKeyDown (Keys.Space))
 						{
-						// Переключение
+						// РџРµСЂРµРєР»СЋС‡РµРЅРёРµ
 						gameStatus = GameStatus.Start;
 
 						return true;
@@ -493,26 +493,26 @@ namespace RD_AAOW
 					//////////////////////////////////////////////////////////////////
 				}
 
-			// Не было ни одного нажатия
+			// РќРµ Р±С‹Р»Рѕ РЅРё РѕРґРЅРѕРіРѕ РЅР°Р¶Р°С‚РёСЏ
 			return false;
 			}
 
 		/// <summary>
-		/// ОБРАБОТКА СОБЫТИЙ КЛАВИАТУРЫ
-		/// Высокоскоростные события
+		/// РћР‘Р РђР‘РћРўРљРђ РЎРћР‘Р«РўРР™ РљР›РђР’РРђРўРЈР Р«
+		/// Р’С‹СЃРѕРєРѕСЃРєРѕСЂРѕСЃС‚РЅС‹Рµ СЃРѕР±С‹С‚РёСЏ
 		/// </summary>
 		private void KeyboardMoveProc ()
 			{
-			// Запрос к клавиатуре
+			// Р—Р°РїСЂРѕСЃ Рє РєР»Р°РІРёР°С‚СѓСЂРµ
 			keyboardState = Keyboard.GetState ();
 
-			// Нажатие клавиш управления
+			// РќР°Р¶Р°С‚РёРµ РєР»Р°РІРёС€ СѓРїСЂР°РІР»РµРЅРёСЏ
 			if ((gameStatus == GameStatus.Playing) && !showExitMsg && isWorking)
 				{
 				if (keyboardState.IsKeyDown (Keys.Up) && !(playerTo.X == 0))
-				// Второе условие отвечает за запрет заднего хода на месте
-				// и лишних нажатий клавиш, совпадающих по направлению с
-				// движением змейки
+				// Р’С‚РѕСЂРѕРµ СѓСЃР»РѕРІРёРµ РѕС‚РІРµС‡Р°РµС‚ Р·Р° Р·Р°РїСЂРµС‚ Р·Р°РґРЅРµРіРѕ С…РѕРґР° РЅР° РјРµСЃС‚Рµ
+				// Рё Р»РёС€РЅРёС… РЅР°Р¶Р°С‚РёР№ РєР»Р°РІРёС€, СЃРѕРІРїР°РґР°СЋС‰РёС… РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ СЃ
+				// РґРІРёР¶РµРЅРёРµРј Р·РјРµР№РєРё
 					{
 					playerTo.X = 0;
 					playerTo.Y = -speed;
@@ -539,27 +539,27 @@ namespace RD_AAOW
 			}
 
 		/////////////////////////////////////////////////////////////////////////////////
-		// ПРОРИСОВКА ИГРОВОГО ПОЛЯ
+		// РџР РћР РРЎРћР’РљРђ РР“Р РћР’РћР“Рћ РџРћР›РЇ
 
 		/// <summary>
-		/// Метод отрисовывает информационное поле игры (очки, уровень, состояние)
+		/// РњРµС‚РѕРґ РѕС‚СЂРёСЃРѕРІС‹РІР°РµС‚ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅРѕРµ РїРѕР»Рµ РёРіСЂС‹ (РѕС‡РєРё, СѓСЂРѕРІРµРЅСЊ, СЃРѕСЃС‚РѕСЏРЅРёРµ)
 		/// </summary>
 		private void DrawInfo ()
 			{
 			string S1,
-					S2 = String.Format (" В розыгрыше: {0,4:D} ", currentScore),
-					S3 = String.Format (" Выигрыш: {0,6:D} ", score),
-					S4 = String.Format (" Съедено: {0,5:D} ", ateApples),
-					S5 = String.Format (" Осталось съесть: {0,2:D} ", applesQuantity - currentScore / SMult);
+					S2 = String.Format (" Р’ СЂРѕР·С‹РіСЂС‹С€Рµ: {0,4:D} ", currentScore),
+					S3 = String.Format (" Р’С‹РёРіСЂС‹С€: {0,6:D} ", score),
+					S4 = String.Format (" РЎСЉРµРґРµРЅРѕ: {0,5:D} ", eatenApples),
+					S5 = String.Format (" РћСЃС‚Р°Р»РѕСЃСЊ СЃСЉРµСЃС‚СЊ: {0,2:D} ", applesQuantity - currentScore / SMult);
 			if (isWorking)
-				S1 = String.Format (" УРОВЕНЬ {0,2:D} ", levelNumber + 1);
+				S1 = String.Format (" РЈР РћР’Р•РќР¬ {0,2:D} ", levelNumber + 1);
 			else
-				S1 = " ПАУЗА ";
+				S1 = " РџРђРЈР—Рђ ";
 
 			float StrUp = Tile.Height * 0.15f,
 				  StrDown = BackBufferHeight - Tile.Height * 0.8f;
 
-			// Векторы позиций для отображения элементов учитывают смещение камеры наблюдения
+			// Р’РµРєС‚РѕСЂС‹ РїРѕР·РёС†РёР№ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ СѓС‡РёС‚С‹РІР°СЋС‚ СЃРјРµС‰РµРЅРёРµ РєР°РјРµСЂС‹ РЅР°Р±Р»СЋРґРµРЅРёСЏ
 			Vector2 V1 = new Vector2 (BackBufferWidth * 0.05f, StrUp) + level.CameraPosition,
 					V2 = new Vector2 (BackBufferWidth * 0.21f, StrUp) + level.CameraPosition,
 					V3 = new Vector2 (BackBufferWidth * 0.50f, StrUp) + level.CameraPosition,
@@ -573,11 +573,11 @@ namespace RD_AAOW
 			DrawShadowedString (defFont, S3, V3, SnakeGameColors.Green);
 			DrawShadowedString (defFont, S4, V4, SnakeGameColors.LBlue);
 
-			// Если игра идёт, выводить строку "осталось съесть"
+			// Р•СЃР»Рё РёРіСЂР° РёРґС‘С‚, РІС‹РІРѕРґРёС‚СЊ СЃС‚СЂРѕРєСѓ "РѕСЃС‚Р°Р»РѕСЃСЊ СЃСЉРµСЃС‚СЊ"
 			if (isAlive)
 				DrawShadowedString (defFont, S5, V5, SnakeGameColors.Silver);
 
-			// Если есть музыка или звук, выводить соответствующий знак
+			// Р•СЃР»Рё РµСЃС‚СЊ РјСѓР·С‹РєР° РёР»Рё Р·РІСѓРє, РІС‹РІРѕРґРёС‚СЊ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ Р·РЅР°Рє
 			if (isMusic)
 				DrawShadowedString (defFont, "[\x266B]", V6, SnakeGameColors.Yellow);
 			else
@@ -588,32 +588,33 @@ namespace RD_AAOW
 			else
 				DrawShadowedString (defFont, "[\x266A]", V7, SnakeGameColors.Black);
 
-			// КОМПАС
-			// Смена цвета стрелки компаса
+			// РљРћРњРџРђРЎ
+			// РЎРјРµРЅР° С†РІРµС‚Р° СЃС‚СЂРµР»РєРё РєРѕРјРїР°СЃР°
 			Color compasColor = SnakeGameColors.CompasRed;
 			if (GameAuxFunctions.VDist (playerPosition[0], applePosition) < GameAuxFunctions.VDist (compasOffs, applePosition))
 				compasColor = SnakeGameColors.CompasGreen;
 
-			// Положение стрелки компаса
+			// РџРѕР»РѕР¶РµРЅРёРµ СЃС‚СЂРµР»РєРё РєРѕРјРїР°СЃР°
 			compasOffs = playerPosition[0];
 			compasPosition.X = (int)playerPosition[0].X;
 			compasPosition.Y = (int)playerPosition[0].Y;
 			Vector2 V8 = applePosition - playerPosition[0];
 
-			// Формула движения стрелки компаса и её отображение
-			compasTurn = (float)Math.Acos (V8.X / GameAuxFunctions.VDist (V8, Vector2.Zero)) * GameAuxFunctions.NNSign (V8.Y, true);
+			// Р¤РѕСЂРјСѓР»Р° РґРІРёР¶РµРЅРёСЏ СЃС‚СЂРµР»РєРё РєРѕРјРїР°СЃР° Рё РµС‘ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ
+			compasTurn = (float)Math.Acos (V8.X / GameAuxFunctions.VDist (V8, Vector2.Zero)) *
+				GameAuxFunctions.NNSign (V8.Y, true);
 			spriteBatch.Draw (compas, compasPosition, compasSize, compasColor, compasTurn,
 				new Vector2 (compas.Width, compas.Height) / 2, SpriteEffects.None, 0.0f);
 			}
 
 		/// <summary>
-		/// Метод отображает сообщения об уровне
+		/// РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± СѓСЂРѕРІРЅРµ
 		/// </summary>
 		private void ShowLevelMessage ()
 			{
-			string S1 = string.Format ("УРОВЕНЬ {0,2:D}", levelNumber + 1),
-					S2 = string.Format ("Необходимо съесть {0,2:D} объектов", applesQuantity),
-					S3 = "Нажмите Пробел, чтобы начать";
+			string S1 = string.Format ("РЈР РћР’Р•РќР¬ {0,2:D}", levelNumber + 1),
+					S2 = string.Format ("РќРµРѕР±С…РѕРґРёРјРѕ СЃСЉРµСЃС‚СЊ {0,2:D} РѕР±СЉРµРєС‚РѕРІ", applesQuantity),
+					S3 = "РќР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР», С‡С‚РѕР±С‹ РЅР°С‡Р°С‚СЊ";
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
@@ -628,12 +629,12 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод отображает сообщения о победе
+		/// РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ Рѕ РїРѕР±РµРґРµ
 		/// </summary>
 		private void ShowWinMessage ()
 			{
-			string S1 = "УРОВЕНЬ ПРОЙДЕН!",
-					S2 = "Нажмите Пробел для продолжения";
+			string S1 = "РЈР РћР’Р•РќР¬ РџР РћР™Р”Р•Рќ!",
+					S2 = "РќР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР» РґР»СЏ РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ";
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
@@ -645,13 +646,13 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод отображает сообщения о проигрыше
+		/// РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ Рѕ РїСЂРѕРёРіСЂС‹С€Рµ
 		/// </summary>
 		private void ShowLoseMessage ()
 			{
-			string S1 = "УРОВЕНЬ",
-					S2 = "НЕ ПРОЙДЕН!",
-					S3 = "Нажмите Пробел, чтобы попробовать снова";
+			string S1 = "РЈР РћР’Р•РќР¬",
+					S2 = "РќР• РџР РћР™Р”Р•Рќ!",
+					S3 = "РќР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР», С‡С‚РѕР±С‹ РїРѕРїСЂРѕР±РѕРІР°С‚СЊ СЃРЅРѕРІР°";
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
@@ -666,16 +667,16 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод отображает сообщения о начале игры
+		/// РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ Рѕ РЅР°С‡Р°Р»Рµ РёРіСЂС‹
 		/// </summary>
 		private void ShowStartMessage ()
 			{
 			string S1 = ProgramDescription.AssemblyTitle,
-					S2 = ProgramDescription.AssemblyCopyright,
+					S2 = RDGenerics.AssemblyCopyright,
 					S3 = ProgramDescription.AssemblyLastUpdate,
-					S4 = "Нажмите Пробел, чтобы начать игру,\n" +
-						 "      F1 для вызова справки,      \n" +
-						 "        или Esc для выхода        ";
+					S4 = "РќР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР», С‡С‚РѕР±С‹ РЅР°С‡Р°С‚СЊ РёРіСЂСѓ,\n" +
+						 "      F1 РґР»СЏ РІС‹Р·РѕРІР° СЃРїСЂР°РІРєРё,      \n" +
+						 "        РёР»Рё Esc РґР»СЏ РІС‹С…РѕРґР°        ";
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
 						(BackBufferHeight - 300) / 2),
@@ -695,15 +696,15 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод отображает сообщения об окончании игры
+		/// РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕРєРѕРЅС‡Р°РЅРёРё РёРіСЂС‹
 		/// </summary>
 		private void ShowFinishMessage ()
 			{
-			string S1 = "ВЫ ПОБЕДИЛИ!!!",
-					S2 = "Ваши результаты:",
-					S3 = string.Format ("Всего очков:    {0,6:D}\nВсего съедено:   {1,5:D}",
-						score, ateApples),
-					S4 = "Нажмите Пробел для продолжения";
+			string S1 = "Р’Р« РџРћР‘Р•Р”РР›Р!!!",
+					S2 = "Р’Р°С€Рё СЂРµР·СѓР»СЊС‚Р°С‚С‹:",
+					S3 = string.Format ("Р’СЃРµРіРѕ РѕС‡РєРѕРІ:    {0,6:D}\nР’СЃРµРіРѕ СЃСЉРµРґРµРЅРѕ:   {1,5:D}",
+						score, eatenApples),
+					S4 = "РќР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР» РґР»СЏ РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ";
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
 						(BackBufferHeight - 250) / 2),
@@ -722,14 +723,14 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод отображает запрос на подтверждение выхода из игры
+		/// РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ Р·Р°РїСЂРѕСЃ РЅР° РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ РІС‹С…РѕРґР° РёР· РёРіСЂС‹
 		/// </summary>
 		private void ShowExitMessage ()
 			{
-			string S1 = "Вы действительно хотите",
-					S2 = "завершить игру?",
-					S3 = "Нажмите Y, чтобы выйти из игры,",
-					S4 = "или N, чтобы вернуться";
+			string S1 = "Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ",
+					S2 = "Р·Р°РІРµСЂС€РёС‚СЊ РёРіСЂСѓ?",
+					S3 = "РќР°Р¶РјРёС‚Рµ Y, С‡С‚РѕР±С‹ РІС‹Р№С‚Рё РёР· РёРіСЂС‹,",
+					S4 = "РёР»Рё N, С‡С‚РѕР±С‹ РІРµСЂРЅСѓС‚СЊСЃСЏ";
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
@@ -747,22 +748,22 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод отображает справку по игре
+		/// РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЃРїСЂР°РІРєСѓ РїРѕ РёРіСЂРµ
 		/// </summary>
 		private void ShowHelpMessage ()
 			{
-			string S1 = "Правила игры",
-					S2 = "   Змейке необходимо съесть все объекты на каждом уровне. Число объектов\n" +
-						 "и скорость змейки будет расти с каждым новым уровнем. Чтобы пройти игру с\n" +
-						 "максимальным количеством очков, ей достаточно не сталкиваться со стенками\n" +
-						 "уровня и с самой собой. За каждый съеденный объект даётся 10 очков, за\n" +
-						 "столкновение отнимается количество несъеденных объектов уровня. Пройдя\n" +
-						 "игру, можно начать её заново с уже заработанными очками",
-					S3 = "Удачи!!!",
-					S4 = "Управление",
-					S5 = "Пробел - пауза / возобновление / начало игры     S - включение / выключение звука\n" +
-						 "Стрелки - управление змейкой                     M - включение / выключение музыки\n" +
-						 "Esc - выход из игры / из справки";
+			string S1 = "РџСЂР°РІРёР»Р° РёРіСЂС‹",
+					S2 = "   Р—РјРµР№РєРµ РЅРµРѕР±С…РѕРґРёРјРѕ СЃСЉРµСЃС‚СЊ РІСЃРµ РѕР±СЉРµРєС‚С‹ РЅР° РєР°Р¶РґРѕРј СѓСЂРѕРІРЅРµ. Р§РёСЃР»Рѕ РѕР±СЉРµРєС‚РѕРІ\n" +
+						 "Рё СЃРєРѕСЂРѕСЃС‚СЊ Р·РјРµР№РєРё Р±СѓРґРµС‚ СЂР°СЃС‚Рё СЃ РєР°Р¶РґС‹Рј РЅРѕРІС‹Рј СѓСЂРѕРІРЅРµРј. Р§С‚РѕР±С‹ РїСЂРѕР№С‚Рё РёРіСЂСѓ СЃ\n" +
+						 "РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј РєРѕР»РёС‡РµСЃС‚РІРѕРј РѕС‡РєРѕРІ, РµР№ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РЅРµ СЃС‚Р°Р»РєРёРІР°С‚СЊСЃСЏ СЃРѕ СЃС‚РµРЅРєР°РјРё\n" +
+						 "СѓСЂРѕРІРЅСЏ Рё СЃ СЃР°РјРѕР№ СЃРѕР±РѕР№. Р—Р° РєР°Р¶РґС‹Р№ СЃСЉРµРґРµРЅРЅС‹Р№ РѕР±СЉРµРєС‚ РґР°С‘С‚СЃСЏ 10 РѕС‡РєРѕРІ, Р·Р°\n" +
+						 "СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ РѕС‚РЅРёРјР°РµС‚СЃСЏ РєРѕР»РёС‡РµСЃС‚РІРѕ РЅРµСЃСЉРµРґРµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ СѓСЂРѕРІРЅСЏ. РџСЂРѕР№РґСЏ\n" +
+						 "РёРіСЂСѓ, РјРѕР¶РЅРѕ РЅР°С‡Р°С‚СЊ РµС‘ Р·Р°РЅРѕРІРѕ СЃ СѓР¶Рµ Р·Р°СЂР°Р±РѕС‚Р°РЅРЅС‹РјРё РѕС‡РєР°РјРё",
+					S3 = "РЈРґР°С‡Рё!!!",
+					S4 = "РЈРїСЂР°РІР»РµРЅРёРµ",
+					S5 = "РџСЂРѕР±РµР» - РїР°СѓР·Р° / РІРѕР·РѕР±РЅРѕРІР»РµРЅРёРµ / РЅР°С‡Р°Р»Рѕ РёРіСЂС‹     S - РІРєР»СЋС‡РµРЅРёРµ / РІС‹РєР»СЋС‡РµРЅРёРµ Р·РІСѓРєР°\n" +
+						 "РЎС‚СЂРµР»РєРё - СѓРїСЂР°РІР»РµРЅРёРµ Р·РјРµР№РєРѕР№                     M - РІРєР»СЋС‡РµРЅРёРµ / РІС‹РєР»СЋС‡РµРЅРёРµ РјСѓР·С‹РєРё\n" +
+						 "Esc - РІС‹С…РѕРґ РёР· РёРіСЂС‹ / РёР· СЃРїСЂР°РІРєРё";
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S1).X) / 2,
 						BackBufferHeight / 2 - 290),
@@ -785,16 +786,16 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод отрисовывает уровень игры
+		/// РњРµС‚РѕРґ РѕС‚СЂРёСЃРѕРІС‹РІР°РµС‚ СѓСЂРѕРІРµРЅСЊ РёРіСЂС‹
 		/// </summary>
-		/// <param name="VGameTime">Время игры</param>
+		/// <param name="VGameTime">Р’СЂРµРјСЏ РёРіСЂС‹</param>
 		protected override void Draw (GameTime VGameTime)
 			{
-			// Создание чистого окна и запуск рисования
+			// РЎРѕР·РґР°РЅРёРµ С‡РёСЃС‚РѕРіРѕ РѕРєРЅР° Рё Р·Р°РїСѓСЃРє СЂРёСЃРѕРІР°РЅРёСЏ
 			graphics.GraphicsDevice.Clear (SnakeGameColors.DGreen);
 			spriteBatch.Begin ();
 
-			// В ЗАВИСИМОСТИ ОТ СОСТОЯНИЯ ИГРЫ
+			// Р’ Р—РђР’РРЎРРњРћРЎРўР РћРў РЎРћРЎРўРћРЇРќРРЇ РР“Р Р«
 			switch (gameStatus)
 				{
 				//////////////////////////////////////////////////////////////////
@@ -811,27 +812,30 @@ namespace RD_AAOW
 
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Playing:
-					// ОТОБРАЖЕНИЕ УРОВНЯ 
+					// РћРўРћР‘Р РђР–Р•РќРР• РЈР РћР’РќРЇ 
 					level.Draw (VGameTime, spriteBatch, playerPosition[0]);
 
-					// ОТОБРАЖЕНИЕ АНИМИРОВАННЫХ ИХОБРАЖЕНИЙ
-					// Яблоко
-					appleAnimator.Draw (VGameTime, spriteBatch, applePosition, SpriteEffects.None, SnakeGameColors.White, 0.0);
+					// РћРўРћР‘Р РђР–Р•РќРР• РђРќРРњРР РћР’РђРќРќР«РҐ РРҐРћР‘Р РђР–Р•РќРР™
+					// РЇР±Р»РѕРєРѕ
+					appleAnimator.Draw (VGameTime, spriteBatch, applePosition, SpriteEffects.None,
+						SnakeGameColors.White, 0.0);
 
-					// Тело змейки
+					// РўРµР»Рѕ Р·РјРµР№РєРё
 					for (int n = 1; n < playerPosition.Count; n++)
-						bodyAnimator.Draw (VGameTime, spriteBatch, playerPosition[n], SpriteEffects.None, SnakeGameColors.White, 0.0);
+						bodyAnimator.Draw (VGameTime, spriteBatch, playerPosition[n], SpriteEffects.None,
+							SnakeGameColors.White, 0.0);
 
-					// Голова змейки
-					headAnimator.Draw (VGameTime, spriteBatch, playerPosition[0], SpriteEffects.None, SnakeGameColors.White,
-						// Изменение угла поворота текстуры
+					// Р“РѕР»РѕРІР° Р·РјРµР№РєРё
+					headAnimator.Draw (VGameTime, spriteBatch, playerPosition[0], SpriteEffects.None,
+						SnakeGameColors.White,
+						// РР·РјРµРЅРµРЅРёРµ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р° С‚РµРєСЃС‚СѓСЂС‹
 						Math.Acos (Math.Sign (playerTo.X)) * GameAuxFunctions.NNSign (playerTo.Y, true));
 
 
-					// ОТОБРАЖЕНИЕ ИНФОРМАЦИИ
+					// РћРўРћР‘Р РђР–Р•РќРР• РРќР¤РћР РњРђР¦РР
 					DrawInfo ();
 
-					// Отображение сообщений
+					// РћС‚РѕР±СЂР°Р¶РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёР№
 					Vector2 backBufferSize = new Vector2 (SnakeGame.BackBufferWidth, SnakeGame.BackBufferHeight);
 					if (showLevelMsg)
 						{
@@ -871,93 +875,93 @@ namespace RD_AAOW
 					break;
 				}
 
-			// Отключение устройства рисования
+			// РћС‚РєР»СЋС‡РµРЅРёРµ СѓСЃС‚СЂРѕР№СЃС‚РІР° СЂРёСЃРѕРІР°РЅРёСЏ
 			spriteBatch.End ();
 
-			// Перерисовка
+			// РџРµСЂРµСЂРёСЃРѕРІРєР°
 			base.Draw (VGameTime);
 			}
 
 		/// <summary>
-		/// Загрузка следующего уровня игры
+		/// Р—Р°РіСЂСѓР·РєР° СЃР»РµРґСѓСЋС‰РµРіРѕ СѓСЂРѕРІРЅСЏ РёРіСЂС‹
 		/// </summary>
 		private void LoadNextLevel ()
 			{
-			// Запуск фоновой мелодии
+			// Р—Р°РїСѓСЃРє С„РѕРЅРѕРІРѕР№ РјРµР»РѕРґРёРё
 			MediaPlayer.Stop ();
 			if (isMusic)
 				MediaPlayer.Play (Content.Load<Song> ("Sounds/Music1"));
 
-			// Поиск следующей структуры уровня
+			// РџРѕРёСЃРє СЃР»РµРґСѓСЋС‰РµР№ СЃС‚СЂСѓРєС‚СѓСЂС‹ СѓСЂРѕРІРЅСЏ
 			while (true)
 				{
-				// Поиск С АВТОСМЕЩЕНИЕМ НА СЛЕДУЮЩИЙ УРОВЕНЬ
+				// РџРѕРёСЃРє РЎ РђР’РўРћРЎРњР•Р©Р•РќРР•Рњ РќРђ РЎР›Р•Р”РЈР®Р©РР™ РЈР РћР’Р•РќР¬
 				++levelNumber;
 				if (levelNumber < LevelData.LevelsQuantity)
 					break;
 
-				// Перезапуск с нулевого уровня в конце игры
+				// РџРµСЂРµР·Р°РїСѓСЃРє СЃ РЅСѓР»РµРІРѕРіРѕ СѓСЂРѕРІРЅСЏ РІ РєРѕРЅС†Рµ РёРіСЂС‹
 				levelNumber = -1;
 				gameStatus = GameStatus.Finish;
 				if (isMusic)
 					MediaPlayer.Play (Content.Load<Song> ("Sounds/Music2"));
 				}
 
-			// Выгрузка предыдущего уровня и загрузка нового
+			// Р’С‹РіСЂСѓР·РєР° РїСЂРµРґС‹РґСѓС‰РµРіРѕ СѓСЂРѕРІРЅСЏ Рё Р·Р°РіСЂСѓР·РєР° РЅРѕРІРѕРіРѕ
 			if (level != null)
 				level.Dispose ();
 			level = new SnakeLevel (Services, levelNumber);
 
-			// СТАРТОВОЕ СОСТОЯНИЕ ИГРЫ
-			// Чтение параметров уровня
+			// РЎРўРђР РўРћР’РћР• РЎРћРЎРўРћРЇРќРР• РР“Р Р«
+			// Р§С‚РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ СѓСЂРѕРІРЅСЏ
 			applesQuantity = level.ApplesQuantity;
 			speed = level.Speed;
 			playerTo = level.PlayerTo * speed;
 
-			// Генерация нового яблока
+			// Р“РµРЅРµСЂР°С†РёСЏ РЅРѕРІРѕРіРѕ СЏР±Р»РѕРєР°
 			NewApple ();
 
-			// Установка параметров
+			// РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ
 			headAnimator.PlayAnimation (headAnimation);
 			isAlive = true;
 
-			// Смена сообщения
+			// РЎРјРµРЅР° СЃРѕРѕР±С‰РµРЅРёСЏ
 			showWinMsg = showLoseMsg = false;
 			showLevelMsg = true;
 
-			// ПЕРЕЗАГРУЗКА ТЕЛА ЗМЕЙКИ
-			// Очистка
+			// РџР•Р Р•Р—РђР“Р РЈР—РљРђ РўР•Р›Рђ Р—РњР•Р™РљР
+			// РћС‡РёСЃС‚РєР°
 			playerPosition.Clear ();
 
-			// Голова
+			// Р“РѕР»РѕРІР°
 			Vector2 pp2 = Tile.Size / 2 + Tile.Size * level.PlayerStartPosition;
 			playerPosition.Add (pp2);
 
-			// Вторая часть тела (располагается за головой)
+			// Р’С‚РѕСЂР°СЏ С‡Р°СЃС‚СЊ С‚РµР»Р° (СЂР°СЃРїРѕР»Р°РіР°РµС‚СЃСЏ Р·Р° РіРѕР»РѕРІРѕР№)
 			pp2.X -= Tile.Width * Math.Sign (playerTo.X);
 			pp2.Y -= Tile.Height * Math.Sign (playerTo.Y);
 			playerPosition.Add (pp2);
 
-			// Запись настроек и результатов игры (в зависимости от того, есть они или нет)
+			// Р—Р°РїРёСЃСЊ РЅР°СЃС‚СЂРѕРµРє Рё СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РёРіСЂС‹ (РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РѕРіРѕ, РµСЃС‚СЊ РѕРЅРё РёР»Рё РЅРµС‚)
 			GameSettings (true);
 			}
 
 		/////////////////////////////////////////////////////////////////////////////////
-		// ПРОВЕРКА СТОЛКНОВЕНИЙ
+		// РџР РћР’Р•Р РљРђ РЎРўРћР›РљРќРћР’Р•РќРР™
 
 		/// <summary>
-		/// Метод проверяет столкновение данной точки с любой точкой стенок или тела змейки
+		/// РњРµС‚РѕРґ РїСЂРѕРІРµСЂСЏРµС‚ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ РґР°РЅРЅРѕР№ С‚РѕС‡РєРё СЃ Р»СЋР±РѕР№ С‚РѕС‡РєРѕР№ СЃС‚РµРЅРѕРє РёР»Рё С‚РµР»Р° Р·РјРµР№РєРё
 		/// </summary>
-		/// <param name="Collaptor">Проверяемая точка</param>
-		/// <param name="WithBody">Проверка столкновения с телом</param>
+		/// <param name="Collaptor">РџСЂРѕРІРµСЂСЏРµРјР°СЏ С‚РѕС‡РєР°</param>
+		/// <param name="WithBody">РџСЂРѕРІРµСЂРєР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ СЃ С‚РµР»РѕРј</param>
 		private bool IsCollapted (Vector2 Collaptor, bool WithBody)
 			{
-			// Чтобы не тестировать с каждым обновлением все камни уровня,
-			// имеет смысл проверить только те клетки игры, которые находятся
-			// на минимальном расстоянии от головы. Таких должно быть всего
-			// четыре: на StoneOffs вверх, влево, вправо и вниз. По координатам
-			// таких смещений легко посчитать масштабный индекс массива для
-			// ближайшей позиции и проверить её collision
+			// Р§С‚РѕР±С‹ РЅРµ С‚РµСЃС‚РёСЂРѕРІР°С‚СЊ СЃ РєР°Р¶РґС‹Рј РѕР±РЅРѕРІР»РµРЅРёРµРј РІСЃРµ РєР°РјРЅРё СѓСЂРѕРІРЅСЏ,
+			// РёРјРµРµС‚ СЃРјС‹СЃР» РїСЂРѕРІРµСЂРёС‚СЊ С‚РѕР»СЊРєРѕ С‚Рµ РєР»РµС‚РєРё РёРіСЂС‹, РєРѕС‚РѕСЂС‹Рµ РЅР°С…РѕРґСЏС‚СЃСЏ
+			// РЅР° РјРёРЅРёРјР°Р»СЊРЅРѕРј СЂР°СЃСЃС‚РѕСЏРЅРёРё РѕС‚ РіРѕР»РѕРІС‹. РўР°РєРёС… РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РІСЃРµРіРѕ
+			// С‡РµС‚С‹СЂРµ: РЅР° StoneOffs РІРІРµСЂС…, РІР»РµРІРѕ, РІРїСЂР°РІРѕ Рё РІРЅРёР·. РџРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°Рј
+			// С‚Р°РєРёС… СЃРјРµС‰РµРЅРёР№ Р»РµРіРєРѕ РїРѕСЃС‡РёС‚Р°С‚СЊ РјР°СЃС€С‚Р°Р±РЅС‹Р№ РёРЅРґРµРєСЃ РјР°СЃСЃРёРІР° РґР»СЏ
+			// Р±Р»РёР¶Р°Р№С€РµР№ РїРѕР·РёС†РёРё Рё РїСЂРѕРІРµСЂРёС‚СЊ РµС‘ collision
 			Vector2[] V1 = new Vector2[]    {
 					new Vector2(Collaptor.X / Tile.Width + StoneOffs, Collaptor.Y / Tile.Height + StoneOffs),
 					new Vector2(Collaptor.X / Tile.Width + StoneOffs, Collaptor.Y / Tile.Height - StoneOffs),
@@ -965,10 +969,10 @@ namespace RD_AAOW
 					new Vector2(Collaptor.X / Tile.Width - StoneOffs, Collaptor.Y / Tile.Height - StoneOffs)
 											};
 
-			// Проверка на столкновение со стенами
+			// РџСЂРѕРІРµСЂРєР° РЅР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃРѕ СЃС‚РµРЅР°РјРё
 			for (int i = 0; i < V1.Length; i++)
-				// Вынужденное ограничение индекса (исключение может возникнуть
-				// при генерации нового яблока)
+				// Р’С‹РЅСѓР¶РґРµРЅРЅРѕРµ РѕРіСЂР°РЅРёС‡РµРЅРёРµ РёРЅРґРµРєСЃР° (РёСЃРєР»СЋС‡РµРЅРёРµ РјРѕР¶РµС‚ РІРѕР·РЅРёРєРЅСѓС‚СЊ
+				// РїСЂРё РіРµРЅРµСЂР°С†РёРё РЅРѕРІРѕРіРѕ СЏР±Р»РѕРєР°)
 				if (level.Tiles[(int)V1[i].X % (int)level.LevelSize.X,
 								(int)V1[i].Y % (int)level.LevelSize.Y].Collision == TileCollision.Stone)
 					{
@@ -977,18 +981,18 @@ namespace RD_AAOW
 					return true;
 					}
 
-			// Проверка на столкновение с собой (если требуется)
+			// РџСЂРѕРІРµСЂРєР° РЅР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃ СЃРѕР±РѕР№ (РµСЃР»Рё С‚СЂРµР±СѓРµС‚СЃСЏ)
 			if (WithBody)
 				for (int i = 1; i < playerPosition.Count; i++)
 					if (GameAuxFunctions.VDist (Collaptor, playerPosition[i]) < BodyOffs)
 						return true;
 
-			// Не было столкновений
+			// РќРµ Р±С‹Р»Рѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёР№
 			return false;
 			}
 
 		/// <summary>
-		/// Метод проверяет столкновение с яблоком
+		/// РњРµС‚РѕРґ РїСЂРѕРІРµСЂСЏРµС‚ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃ СЏР±Р»РѕРєРѕРј
 		/// </summary>
 		/// <returns></returns>
 		private bool IsAte ()
@@ -1000,13 +1004,13 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод генерирует новое яблоко
+		/// РњРµС‚РѕРґ РіРµРЅРµСЂРёСЂСѓРµС‚ РЅРѕРІРѕРµ СЏР±Р»РѕРєРѕ
 		/// </summary>
 		private void NewApple ()
 			{
 			Vector2 NewV;
 
-			// Генерация новой позиции, не попадающей на камни и игрока
+			// Р“РµРЅРµСЂР°С†РёСЏ РЅРѕРІРѕР№ РїРѕР·РёС†РёРё, РЅРµ РїРѕРїР°РґР°СЋС‰РµР№ РЅР° РєР°РјРЅРё Рё РёРіСЂРѕРєР°
 			do
 				{
 				NewV.X = rnd.Next ((int)(level.LevelSize.X * Tile.Width));
@@ -1015,12 +1019,12 @@ namespace RD_AAOW
 
 			applePosition = NewV;
 
-			// Выбор новой анимации
+			// Р’С‹Р±РѕСЂ РЅРѕРІРѕР№ Р°РЅРёРјР°С†РёРё
 			appleAnimator.PlayAnimation (appleAnimation[rnd.Next (appleAnimation.Length)]);
 			}
 
 		/// <summary>
-		/// Метод отрисовывает текстовую строку
+		/// РњРµС‚РѕРґ РѕС‚СЂРёСЃРѕРІС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІСѓСЋ СЃС‚СЂРѕРєСѓ
 		/// </summary>
 		/// <param name="VFont"></param>
 		/// <param name="VString"></param>
@@ -1028,38 +1032,43 @@ namespace RD_AAOW
 		/// <param name="VColor"></param>
 		private void DrawShadowedString (SpriteFont VFont, string VString, Vector2 VPosition, Color VColor)
 			{
-			// Строка табуляций берётся потому, что в шрифте этот символ был
-			// исключён за ненадобностью. В результате он при отображении
-			// заменяется на default, который в том же шрифте выставлен как
-			// символ-прямоугольник
-			string SubStr = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+			// РЎС‚СЂРѕРєР° С‚Р°Р±СѓР»СЏС†РёР№ Р±РµСЂС‘С‚СЃСЏ РїРѕС‚РѕРјСѓ, С‡С‚Рѕ РІ С€СЂРёС„С‚Рµ СЌС‚РѕС‚ СЃРёРјРІРѕР» Р±С‹Р»
+			// РёСЃРєР»СЋС‡С‘РЅ Р·Р° РЅРµРЅР°РґРѕР±РЅРѕСЃС‚СЊСЋ. Р’ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РѕРЅ РїСЂРё РѕС‚РѕР±СЂР°Р¶РµРЅРёРё
+			// Р·Р°РјРµРЅСЏРµС‚СЃСЏ РЅР° default, РєРѕС‚РѕСЂС‹Р№ РІ С‚РѕРј Р¶Рµ С€СЂРёС„С‚Рµ РІС‹СЃС‚Р°РІР»РµРЅ РєР°Рє
+			// СЃРёРјРІРѕР»-РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
+			string SubStr = "в–€".PadRight (30, 'в–€');
 
 			spriteBatch.DrawString (VFont, SubStr.Remove (VString.Length), VPosition, SnakeGameColors.DGreen);
 			spriteBatch.DrawString (VFont, VString, VPosition, VColor);
 			}
 
 		/// <summary>
-		/// Метод считывает / сохраняет настройки игры
+		/// РњРµС‚РѕРґ СЃС‡РёС‚С‹РІР°РµС‚ / СЃРѕС…СЂР°РЅСЏРµС‚ РЅР°СЃС‚СЂРѕР№РєРё РёРіСЂС‹
 		/// </summary>
-		/// <param name="Write">Флаг указывает на режим записи</param>
+		/// <param name="Write">Р¤Р»Р°Рі СѓРєР°Р·С‹РІР°РµС‚ РЅР° СЂРµР¶РёРј Р·Р°РїРёСЃРё</param>
 		private void GameSettings (bool Write)
 			{
-			string FN = "C:\\Docume~1\\Alluse~1\\Applic~1\\Microsoft\\Windows\\SnakeGame.sav";
-			string S = FN.Substring (0, FN.Length - 14);
+			/*string FN = "C:\\Docume~1\\Alluse~1\\Applic~1\\Microsoft\\Windows\\SnakeGame.sav";
+			string S = FN.Substring (0, FN.Length - 14);*/
 
 			if (Write)
 				{
-				Directory.CreateDirectory (FN.Substring (0, FN.Length - 14));
+				/*Directory.CreateDirectory (FN.Substring (0, FN.Length - 14));
 				StreamWriter FL = new StreamWriter (FN, false);
 
 				FL.Write ("{0:D}\n{1:D}\n{2:D}\n{3:D}\n{4:D}",
 					levelNumber, score, ateApples, isMusic, isSound);
 
-				FL.Close ();
+				FL.Close ();*/
+				RDGenerics.SetAppSettingsValue ("Level", levelNumber.ToString ());
+				RDGenerics.SetAppSettingsValue ("Score", score.ToString ());
+				RDGenerics.SetAppSettingsValue ("EatenApples", eatenApples.ToString ());
+				RDGenerics.SetAppSettingsValue ("Music", isMusic.ToString ());
+				RDGenerics.SetAppSettingsValue ("Sound", isSound.ToString ());
 				}
-			else if (File.Exists (FN))
+			else /*if (File.Exists (FN))*/
 				{
-				StreamReader FL = new StreamReader (FN);
+				/*StreamReader FL = new StreamReader (FN);
 
 				levelNumber = int.Parse (FL.ReadLine ());
 				score = int.Parse (FL.ReadLine ());
@@ -1067,7 +1076,17 @@ namespace RD_AAOW
 				isMusic = bool.Parse (FL.ReadLine ());
 				isSound = bool.Parse (FL.ReadLine ());
 
-				FL.Close ();
+				FL.Close ();*/
+
+				try
+					{
+					levelNumber = int.Parse (RDGenerics.GetAppSettingsValue ("Level"));
+					score = int.Parse (RDGenerics.GetAppSettingsValue ("Score"));
+					eatenApples = int.Parse (RDGenerics.GetAppSettingsValue ("EatenApples"));
+					isMusic = bool.Parse (RDGenerics.GetAppSettingsValue ("Music"));
+					isSound = bool.Parse (RDGenerics.GetAppSettingsValue ("Sound"));
+					}
+				catch { }
 				}
 			}
 		}
