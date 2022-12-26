@@ -2,6 +2,7 @@
 > PCC: 02344C58E25F43E7
 
 
+
 “Snake” game – a sample project for MonoGame Framework
 
 Игра «Змейка» – учебный проект для MonoGame Framework
