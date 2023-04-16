@@ -125,7 +125,6 @@ namespace RD_AAOW
 		protected override void Initialize ()
 			{
 			// НАСТРОЙКА АППАРАТА ПРОРИСОВКИ
-			//this.IsMouseVisible = true;
 			spriteBatch = new SpriteBatch (GraphicsDevice);
 
 			// СОЗДАНИЕ ОБЪЕКТОВ АНИМАЦИИ
@@ -222,6 +221,7 @@ namespace RD_AAOW
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Start:
 				case GameStatus.Help:
+				case GameStatus.Language:
 					// Движение по синусоиде
 					startSnakeVector.X += 2;
 					startSnakeVector.Y = BackBufferHeight - snakeImg.Height / 2 - 190 +
@@ -381,6 +381,14 @@ namespace RD_AAOW
 						return true;
 						}
 
+					// Выбор языка интерфеса
+					if (keyboardState.IsKeyDown (Keys.L))
+						{
+						gameStatus = GameStatus.Language;
+
+						return true;
+						}
+
 					// Переход далее
 					if (keyboardState.IsKeyDown (Keys.Space))
 						{
@@ -398,6 +406,7 @@ namespace RD_AAOW
 
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Help:
+				case GameStatus.Language:
 					// Возврат
 					if (keyboardState.IsKeyDown (Keys.Escape))
 						{
@@ -414,7 +423,8 @@ namespace RD_AAOW
 					// Нажатие паузы и продолжения
 					if (!showExitMsg)           // Нельзя ничего делать, если появилось сообщение о выходе
 						{
-						if (isAlive && keyboardState.IsKeyDown (Keys.Space))    // Pause
+						// Pause
+						if (isAlive && keyboardState.IsKeyDown (Keys.Space))
 							{
 							if (isWorking)
 								{
@@ -423,7 +433,9 @@ namespace RD_AAOW
 								if (isSound)
 									SStop.Play ();
 								}
-							else                                                // Continue
+
+							// Continue
+							else
 								{
 								showLevelMsg = false;
 								isWorking = true;
@@ -465,7 +477,11 @@ namespace RD_AAOW
 						{
 						// Выход из игры (yes)
 						if (keyboardState.IsKeyDown (Keys.Y))
+							{
 							this.Exit ();
+
+							return true;
+							}
 
 						// Продолжение (back)
 						if (keyboardState.IsKeyDown (Keys.N))
@@ -546,7 +562,16 @@ namespace RD_AAOW
 		/// </summary>
 		private void DrawInfo ()
 			{
-			string S1,
+			// Сборка строк
+			if (string.IsNullOrWhiteSpace (stScoreLines[0]))
+				{
+				string[] values = Localization.GetText ("ScoreLines").Split (splitter,
+					StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < stScoreLines.Length; i++)
+					stScoreLines[i] = values[i];
+				}
+
+			/*string S1,
 					S2 = String.Format (" В розыгрыше: {0,4:D} ", currentScore),
 					S3 = String.Format (" Выигрыш: {0,6:D} ", score),
 					S4 = String.Format (" Съедено: {0,5:D} ", eatenApples),
@@ -554,7 +579,12 @@ namespace RD_AAOW
 			if (isWorking)
 				S1 = String.Format (" УРОВЕНЬ {0,2:D} ", levelNumber + 1);
 			else
-				S1 = " ПАУЗА ";
+				S1 = " ПАУЗА ";*/
+			string S00 = string.Format (stScoreLines[0], currentScore);
+			string S01 = string.Format (stScoreLines[1], score);
+			string S02 = string.Format (stScoreLines[2], eatenApples);
+			string S03 = string.Format (stScoreLines[3], applesQuantity - currentScore / SMult);
+			string S04 = (isWorking ? string.Format (stScoreLines[4], levelNumber + 1) : stScoreLines[5]);
 
 			float StrUp = Tile.Height * 0.15f,
 				  StrDown = BackBufferHeight - Tile.Height * 0.8f;
@@ -568,14 +598,14 @@ namespace RD_AAOW
 					V6 = new Vector2 (BackBufferWidth * 0.89f, StrDown) + level.CameraPosition,
 					V7 = new Vector2 (BackBufferWidth * 0.92f, StrDown) + level.CameraPosition;
 
-			DrawShadowedString (defFont, S1, V1, SnakeGameColors.LRed);
-			DrawShadowedString (defFont, S2, V2, SnakeGameColors.Yellow);
-			DrawShadowedString (defFont, S3, V3, SnakeGameColors.Green);
-			DrawShadowedString (defFont, S4, V4, SnakeGameColors.LBlue);
+			DrawShadowedString (defFont, S04, V1, SnakeGameColors.LRed);
+			DrawShadowedString (defFont, S00, V2, SnakeGameColors.Yellow);
+			DrawShadowedString (defFont, S01, V3, SnakeGameColors.Green);
+			DrawShadowedString (defFont, S02, V4, SnakeGameColors.LBlue);
 
 			// Если игра идёт, выводить строку "осталось съесть"
 			if (isAlive)
-				DrawShadowedString (defFont, S5, V5, SnakeGameColors.Silver);
+				DrawShadowedString (defFont, S03, V5, SnakeGameColors.Silver);
 
 			// Если есть музыка или звук, выводить соответствующий знак
 			if (isMusic)
@@ -591,7 +621,8 @@ namespace RD_AAOW
 			// КОМПАС
 			// Смена цвета стрелки компаса
 			Color compasColor = SnakeGameColors.CompasRed;
-			if (GameAuxFunctions.VDist (playerPosition[0], applePosition) < GameAuxFunctions.VDist (compasOffs, applePosition))
+			if (GameAuxFunctions.VDist (playerPosition[0], applePosition) <
+				GameAuxFunctions.VDist (compasOffs, applePosition))
 				compasColor = SnakeGameColors.CompasGreen;
 
 			// Положение стрелки компаса
@@ -606,147 +637,255 @@ namespace RD_AAOW
 			spriteBatch.Draw (compas, compasPosition, compasSize, compasColor, compasTurn,
 				new Vector2 (compas.Width, compas.Height) / 2, SpriteEffects.None, 0.0f);
 			}
+		private string[] stScoreLines = new string[6];
+		private char[] splitter = new char[] { '\t' };
 
 		/// <summary>
 		/// Метод отображает сообщения об уровне
 		/// </summary>
 		private void ShowLevelMessage ()
 			{
-			string S1 = string.Format ("УРОВЕНЬ {0,2:D}", levelNumber + 1),
-					S2 = string.Format ("Необходимо съесть {0,2:D} объектов", applesQuantity),
-					S3 = "Нажмите Пробел, чтобы начать";
+			// Сборка строк
+			if (string.IsNullOrWhiteSpace (stLevelLines[0]))
+				{
+				string[] values = Localization.GetText ("LevelLines").Split (splitter,
+					StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < stLevelLines.Length; i++)
+					stLevelLines[i] = values[i];
+				}
 
-			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
+			/*string S1 = string.Format ("УРОВЕНЬ {0,2:D}", levelNumber + 1),
+					S2 = string.Format ("Необходимо съесть {0,2:D} объектов", applesQuantity),
+					S3 = "Нажмите Пробел, чтобы начать";*/
+			string S00 = string.Format (stLevelLines[0], levelNumber + 1);
+			string S01 = string.Format (stLevelLines[1], applesQuantity);
+
+			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S00).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
-					V2 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S2).X) / 2,
+					V2 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S01).X) / 2,
 						(BackBufferHeight - 50) / 2) + level.CameraPosition,
-					V3 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S3).X) / 2,
+					V3 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stLevelLines[2]).X) / 2,
 						(BackBufferHeight + 150) / 2) + level.CameraPosition;
 
-			spriteBatch.DrawString (bigFont, S1, V1, SnakeGameColors.LBlue);
-			spriteBatch.DrawString (midFont, S2, V2, SnakeGameColors.Orange);
-			spriteBatch.DrawString (defFont, S3, V3, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (bigFont, S00, V1, SnakeGameColors.LBlue);
+			spriteBatch.DrawString (midFont, S01, V2, SnakeGameColors.Orange);
+			spriteBatch.DrawString (defFont, stLevelLines[2], V3, SnakeGameColors.DBlue);
 			}
+		private string[] stLevelLines = new string[3];
 
 		/// <summary>
 		/// Метод отображает сообщения о победе
 		/// </summary>
 		private void ShowWinMessage ()
 			{
-			string S1 = "УРОВЕНЬ ПРОЙДЕН!",
-					S2 = "Нажмите Пробел для продолжения";
+			// Сборка строк
+			if (string.IsNullOrWhiteSpace (stSuccessLines[0]))
+				{
+				string[] values = Localization.GetText ("SuccessLines").Split (splitter,
+					StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < stSuccessLines.Length; i++)
+					stSuccessLines[i] = values[i];
+				}
 
-			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
+			/*string S1 = "УРОВЕНЬ ПРОЙДЕН!",
+					S2 = "Нажмите Пробел для продолжения";*/
+
+			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stSuccessLines[0]).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
-					V2 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S2).X) / 2,
+					V2 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stSuccessLines[1]).X) / 2,
 						(BackBufferHeight + 150) / 2) + level.CameraPosition;
 
-			spriteBatch.DrawString (bigFont, S1, V1, SnakeGameColors.Green);
-			spriteBatch.DrawString (defFont, S2, V2, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (bigFont, stSuccessLines[0], V1, SnakeGameColors.Green);
+			spriteBatch.DrawString (defFont, stSuccessLines[1], V2, SnakeGameColors.DBlue);
 			}
+		private string[] stSuccessLines = new string[2];
 
 		/// <summary>
 		/// Метод отображает сообщения о проигрыше
 		/// </summary>
 		private void ShowLoseMessage ()
 			{
-			string S1 = "УРОВЕНЬ",
-					S2 = "НЕ ПРОЙДЕН!",
-					S3 = "Нажмите Пробел, чтобы попробовать снова";
+			// Сборка строк
+			if (string.IsNullOrWhiteSpace (stLoseLines[0]))
+				{
+				string[] values = Localization.GetText ("LoseLines").Split (splitter,
+					StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < stLoseLines.Length; i++)
+					stLoseLines[i] = values[i];
+				}
 
-			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
+			/*string S1 = "УРОВЕНЬ",
+					S2 = "НЕ ПРОЙДЕН!",
+					S3 = "Нажмите Пробел, чтобы попробовать снова";*/
+
+			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stLoseLines[0]).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
-					V2 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S2).X) / 2,
+					V2 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stLoseLines[1]).X) / 2,
 						(BackBufferHeight - 150) / 2) + level.CameraPosition,
-					V3 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S3).X) / 2,
+					V3 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stLoseLines[2]).X) / 2,
 						(BackBufferHeight + 150) / 2) + level.CameraPosition;
 
-			spriteBatch.DrawString (bigFont, S1, V1, SnakeGameColors.Red);
-			spriteBatch.DrawString (bigFont, S2, V2, SnakeGameColors.Red);
-			spriteBatch.DrawString (defFont, S3, V3, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (bigFont, stLoseLines[0], V1, SnakeGameColors.Red);
+			spriteBatch.DrawString (bigFont, stLoseLines[1], V2, SnakeGameColors.Red);
+			spriteBatch.DrawString (defFont, stLoseLines[2], V3, SnakeGameColors.DBlue);
 			}
+		private string[] stLoseLines = new string[3];
 
 		/// <summary>
 		/// Метод отображает сообщения о начале игры
 		/// </summary>
 		private void ShowStartMessage ()
 			{
-			string S1 = ProgramDescription.AssemblyTitle,
+			// Сборка строк
+			if (string.IsNullOrWhiteSpace (stStartLines[0]))
+				{
+				string[] values = Localization.GetText ("StartLines").Split (splitter,
+					StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < stStartLines.Length - 1; i++)
+					stStartLines[i] = values[i];
+				stStartLines[3] = ProgramDescription.AssemblyTitle;
+				}
+
+			/*string S1 = ProgramDescription.AssemblyTitle,
 					S2 = RDGenerics.AssemblyCopyright,
 					S3 = ProgramDescription.AssemblyLastUpdate,
 					S4 = "Нажмите Пробел, чтобы начать игру,\n" +
 						 "      F1 для вызова справки,      \n" +
-						 "        или Esc для выхода        ";
+						 "        или Esc для выхода        ";*/
 
-			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
+			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stStartLines[3]).X) / 2,
 						(BackBufferHeight - 300) / 2),
-					V2 = new Vector2 (BackBufferWidth - midFont.MeasureString (S3).X - 20,
+					/*V2 = new Vector2 (BackBufferWidth - midFont.MeasureString (stStartLines[0]).X - 20,
 						BackBufferHeight - 70),
-					V3 = new Vector2 (BackBufferWidth - midFont.MeasureString (S3).X - 20,
-						BackBufferHeight - 40),
-					V4 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S4).X) / 2,
-						BackBufferHeight - 180);
+					V3 = new Vector2 (BackBufferWidth - midFont.MeasureString (stStartLines[1]).X - 20,
+						BackBufferHeight - 40),*/
+					V4 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stStartLines[0]).X) / 2,
+						BackBufferHeight - 180),
+					V5 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stStartLines[1]).X) / 2,
+						BackBufferHeight - 150),
+					V6 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stStartLines[2]).X) / 2,
+						BackBufferHeight - 120);
 
 			spriteBatch.Draw (startBack, Vector2.Zero, SnakeGameColors.White);
 			spriteBatch.Draw (snakeImg, startSnakeVector, SnakeGameColors.White);
-			spriteBatch.DrawString (bigFont, S1, V1, SnakeGameColors.Gold);
-			spriteBatch.DrawString (midFont, S2, V2, SnakeGameColors.Silver);
-			spriteBatch.DrawString (midFont, S3, V3, SnakeGameColors.Silver);
-			spriteBatch.DrawString (defFont, S4, V4, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (bigFont, stStartLines[3], V1, SnakeGameColors.Gold);
+			/*spriteBatch.DrawString (midFont, S2, V2, SnakeGameColors.Silver);
+			spriteBatch.DrawString (midFont, S3, V3, SnakeGameColors.Silver);*/
+			spriteBatch.DrawString (defFont, stStartLines[0], V4, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (defFont, stStartLines[1], V5, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (defFont, stStartLines[2], V6, SnakeGameColors.DBlue);
 			}
+		private string[] stStartLines = new string[4];
 
 		/// <summary>
 		/// Метод отображает сообщения об окончании игры
 		/// </summary>
 		private void ShowFinishMessage ()
 			{
-			string S1 = "ВЫ ПОБЕДИЛИ!!!",
+			// Сборка строк
+			if (string.IsNullOrWhiteSpace (stFinishLines[0]))
+				{
+				string[] values = Localization.GetText ("FinishLines").Split (splitter,
+					StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < stFinishLines.Length; i++)
+					stFinishLines[i] = values[i];
+				}
+
+			/*string S1 = "ВЫ ПОБЕДИЛИ!!!",
 					S2 = "Ваши результаты:",
 					S3 = string.Format ("Всего очков:    {0,6:D}\nВсего съедено:   {1,5:D}",
 						score, eatenApples),
-					S4 = "Нажмите Пробел для продолжения";
+					S4 = "Нажмите Пробел для продолжения";*/
+			string S02 = string.Format (stFinishLines[2], score);
+			string S03 = string.Format (stFinishLines[3], eatenApples);
 
-			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
+			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stFinishLines[0]).X) / 2,
 						(BackBufferHeight - 250) / 2),
-					V2 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S2).X) / 2,
+					V2 = new Vector2 ((BackBufferWidth - midFont.MeasureString (stFinishLines[1]).X) / 2,
 						(BackBufferHeight - 100) / 2),
-					V3 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S3).X) / 2,
+					V3 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S02).X) / 2,
 						(BackBufferHeight) / 2),
-					V4 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S4).X) / 2,
+					V4 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S03).X) / 2,
+						(BackBufferHeight + 60) / 2),
+					V5 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stFinishLines[4]).X) / 2,
 						(BackBufferHeight + 200) / 2);
 
 			spriteBatch.Draw (startBack, Vector2.Zero, SnakeGameColors.White);
-			spriteBatch.DrawString (bigFont, S1, V1, SnakeGameColors.Gold);
-			spriteBatch.DrawString (midFont, S2, V2, SnakeGameColors.Brown);
-			spriteBatch.DrawString (midFont, S3, V3, SnakeGameColors.Brown);
-			spriteBatch.DrawString (defFont, S4, V4, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (bigFont, stFinishLines[0], V1, SnakeGameColors.Gold);
+			spriteBatch.DrawString (midFont, stFinishLines[1], V2, SnakeGameColors.Brown);
+			spriteBatch.DrawString (midFont, S02, V3, SnakeGameColors.Brown);
+			spriteBatch.DrawString (midFont, S03, V3, SnakeGameColors.Brown);
+			spriteBatch.DrawString (defFont, stFinishLines[4], V4, SnakeGameColors.DBlue);
 			}
+		private string[] stFinishLines = new string[5];
 
 		/// <summary>
 		/// Метод отображает запрос на подтверждение выхода из игры
 		/// </summary>
 		private void ShowExitMessage ()
 			{
-			string S1 = "Вы действительно хотите",
+			// Сборка строк
+			if (string.IsNullOrWhiteSpace (stExitLines[0]))
+				{
+				string[] values = Localization.GetText ("ExitLines").Split (splitter,
+					StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < stExitLines.Length; i++)
+					stExitLines[i] = values[i];
+				}
+
+			/*string S1 = "Вы действительно хотите",
 					S2 = "завершить игру?",
 					S3 = "Нажмите Y, чтобы выйти из игры,",
-					S4 = "или N, чтобы вернуться";
+					S4 = "или N, чтобы вернуться";*/
 
-			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S1).X) / 2,
+			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stExitLines[0]).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
-					V2 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S2).X) / 2,
+					V2 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stExitLines[1]).X) / 2,
 						(BackBufferHeight - 150) / 2) + level.CameraPosition,
-					V3 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S3).X) / 2,
+					V3 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stExitLines[2]).X) / 2,
 						(BackBufferHeight + 100) / 2) + level.CameraPosition,
-					V4 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S4).X) / 2,
+					V4 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stExitLines[3]).X) / 2,
 						(BackBufferHeight + 140) / 2) + level.CameraPosition;
 
-			spriteBatch.DrawString (bigFont, S1, V1, SnakeGameColors.Yellow);
-			spriteBatch.DrawString (bigFont, S2, V2, SnakeGameColors.Yellow);
-			spriteBatch.DrawString (defFont, S3, V3, SnakeGameColors.DBlue);
-			spriteBatch.DrawString (defFont, S4, V4, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (bigFont, stExitLines[0], V1, SnakeGameColors.Yellow);
+			spriteBatch.DrawString (bigFont, stExitLines[1], V2, SnakeGameColors.Yellow);
+			spriteBatch.DrawString (defFont, stExitLines[2], V3, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (defFont, stExitLines[3], V4, SnakeGameColors.DBlue);
 			}
+		private string[] stExitLines = new string[4];
 
+		/// <summary>
+		/// Отображение вспомогательных интерфейсов
+		/// </summary>
+		private void ShowServiceMessage (bool Language)
+			{
+			// Защита от множественного входа
+			if (showingServiceMessage)
+				return;
+			showingServiceMessage = true;
+
+			// Блокировка отрисовки и запуск справки
+			graphics.ToggleFullScreen ();
+			spriteBatch.End ();
+
+			if (Language)
+				RDGenerics.MessageBox ();
+			else
+				RDGenerics.ShowAbout (false);
+
+			// Возврат в исходное состояние
+			spriteBatch.Begin ();
+			graphics.PreferredBackBufferWidth = BackBufferWidth;
+			graphics.PreferredBackBufferHeight = BackBufferHeight;
+			graphics.ToggleFullScreen ();
+
+			// Выход в меню
+			gameStatus = GameStatus.Start;
+			showingServiceMessage = false;
+			}
+		private bool showingServiceMessage = false;
+
+		/*
 		/// <summary>
 		/// Метод отображает справку по игре
 		/// </summary>
@@ -783,7 +922,7 @@ namespace RD_AAOW
 			spriteBatch.DrawString (defFont, S3, V3, SnakeGameColors.DBlue);
 			spriteBatch.DrawString (midFont, S4, V4, SnakeGameColors.Gold);
 			spriteBatch.DrawString (defFont, S5, V5, SnakeGameColors.DBlue);
-			}
+			}*/
 
 		/// <summary>
 		/// Метод отрисовывает уровень игры
@@ -806,8 +945,11 @@ namespace RD_AAOW
 
 				//////////////////////////////////////////////////////////////////
 				case GameStatus.Help:
-					ShowHelpMessage ();
+					ShowServiceMessage (false);
+					break;
 
+				case GameStatus.Language:
+					ShowServiceMessage (true);
 					break;
 
 				//////////////////////////////////////////////////////////////////
@@ -1048,36 +1190,16 @@ namespace RD_AAOW
 		/// <param name="Write">Флаг указывает на режим записи</param>
 		private void GameSettings (bool Write)
 			{
-			/*string FN = "C:\\Docume~1\\Alluse~1\\Applic~1\\Microsoft\\Windows\\SnakeGame.sav";
-			string S = FN.Substring (0, FN.Length - 14);*/
-
 			if (Write)
 				{
-				/*Directory.CreateDirectory (FN.Substring (0, FN.Length - 14));
-				StreamWriter FL = new StreamWriter (FN, false);
-
-				FL.Write ("{0:D}\n{1:D}\n{2:D}\n{3:D}\n{4:D}",
-					levelNumber, score, ateApples, isMusic, isSound);
-
-				FL.Close ();*/
 				RDGenerics.SetAppSettingsValue ("Level", levelNumber.ToString ());
 				RDGenerics.SetAppSettingsValue ("Score", score.ToString ());
 				RDGenerics.SetAppSettingsValue ("EatenApples", eatenApples.ToString ());
 				RDGenerics.SetAppSettingsValue ("Music", isMusic.ToString ());
 				RDGenerics.SetAppSettingsValue ("Sound", isSound.ToString ());
 				}
-			else /*if (File.Exists (FN))*/
+			else
 				{
-				/*StreamReader FL = new StreamReader (FN);
-
-				levelNumber = int.Parse (FL.ReadLine ());
-				score = int.Parse (FL.ReadLine ());
-				ateApples = int.Parse (FL.ReadLine ());
-				isMusic = bool.Parse (FL.ReadLine ());
-				isSound = bool.Parse (FL.ReadLine ());
-
-				FL.Close ();*/
-
 				try
 					{
 					levelNumber = int.Parse (RDGenerics.GetAppSettingsValue ("Level"));

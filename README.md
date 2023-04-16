@@ -1,5 +1,5 @@
-﻿# Snake v 2.0 
-> PCC: 02344C58E25F43E7
+﻿# Snake v 2.1
+> PCC: 0235D2837F785698
 
 
 
@@ -16,7 +16,7 @@
 - [MonoGame Framework](https://monogame.net) (included in the package / включено в пакет);
 - Actual update for [DirectX](https://microsoft.com/en-us/download/confirmation.aspx?id=35).
 
-Interface languages / языки интерфейса: ru_ru.
+Interface languages / языки интерфейса: en_us, ru_ru.
 
 &nbsp;
 
