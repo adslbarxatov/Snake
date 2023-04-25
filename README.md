@@ -1,9 +1,9 @@
-﻿# Snake v 2.1.2
+# Snake v 2.1.2
 > PCC: 0235E685BB92C243
 
 
 
-“Snake” game – a sample project for MonoGame Framework
+Snake minigame – a sample project for MonoGame Framework
 
 Игра «Змейка» – учебный проект для MonoGame Framework
 
