@@ -195,7 +195,6 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод-обработчик динамических событий игры
 		/// </summary>
-		/// <param name="gameTime"></param>
 		protected override void Update (GameTime gameTime)
 			{
 			// Опрос клавиатуры с предотвращением повторов
@@ -477,11 +476,7 @@ namespace RD_AAOW
 						{
 						// Выход из игры (yes)
 						if (keyboardState.IsKeyDown (Keys.Y))
-							{
 							this.Exit ();
-
-							return true;
-							}
 
 						// Продолжение (back)
 						if (keyboardState.IsKeyDown (Keys.N))
@@ -571,15 +566,6 @@ namespace RD_AAOW
 					stScoreLines[i] = values[i];
 				}
 
-			/*string S1,
-					S2 = String.Format (" В розыгрыше: {0,4:D} ", currentScore),
-					S3 = String.Format (" Выигрыш: {0,6:D} ", score),
-					S4 = String.Format (" Съедено: {0,5:D} ", eatenApples),
-					S5 = String.Format (" Осталось съесть: {0,2:D} ", applesQuantity - currentScore / SMult);
-			if (isWorking)
-				S1 = String.Format (" УРОВЕНЬ {0,2:D} ", levelNumber + 1);
-			else
-				S1 = " ПАУЗА ";*/
 			string S00 = string.Format (stScoreLines[0], currentScore);
 			string S01 = string.Format (stScoreLines[1], score);
 			string S02 = string.Format (stScoreLines[2], eatenApples);
@@ -653,10 +639,6 @@ namespace RD_AAOW
 				for (int i = 0; i < stLevelLines.Length; i++)
 					stLevelLines[i] = values[i];
 				}
-
-			/*string S1 = string.Format ("УРОВЕНЬ {0,2:D}", levelNumber + 1),
-					S2 = string.Format ("Необходимо съесть {0,2:D} объектов", applesQuantity),
-					S3 = "Нажмите Пробел, чтобы начать";*/
 			string S00 = string.Format (stLevelLines[0], levelNumber + 1);
 			string S01 = string.Format (stLevelLines[1], applesQuantity);
 
@@ -687,9 +669,6 @@ namespace RD_AAOW
 					stSuccessLines[i] = values[i];
 				}
 
-			/*string S1 = "УРОВЕНЬ ПРОЙДЕН!",
-					S2 = "Нажмите Пробел для продолжения";*/
-
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stSuccessLines[0]).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
 					V2 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stSuccessLines[1]).X) / 2,
@@ -713,10 +692,6 @@ namespace RD_AAOW
 				for (int i = 0; i < stLoseLines.Length; i++)
 					stLoseLines[i] = values[i];
 				}
-
-			/*string S1 = "УРОВЕНЬ",
-					S2 = "НЕ ПРОЙДЕН!",
-					S3 = "Нажмите Пробел, чтобы попробовать снова";*/
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stLoseLines[0]).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
@@ -746,19 +721,8 @@ namespace RD_AAOW
 				stStartLines[3] = ProgramDescription.AssemblyTitle;
 				}
 
-			/*string S1 = ProgramDescription.AssemblyTitle,
-					S2 = RDGenerics.AssemblyCopyright,
-					S3 = ProgramDescription.AssemblyLastUpdate,
-					S4 = "Нажмите Пробел, чтобы начать игру,\n" +
-						 "      F1 для вызова справки,      \n" +
-						 "        или Esc для выхода        ";*/
-
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stStartLines[3]).X) / 2,
 						(BackBufferHeight - 300) / 2),
-					/*V2 = new Vector2 (BackBufferWidth - midFont.MeasureString (stStartLines[0]).X - 20,
-						BackBufferHeight - 70),
-					V3 = new Vector2 (BackBufferWidth - midFont.MeasureString (stStartLines[1]).X - 20,
-						BackBufferHeight - 40),*/
 					V4 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stStartLines[0]).X) / 2,
 						BackBufferHeight - 180),
 					V5 = new Vector2 ((BackBufferWidth - defFont.MeasureString (stStartLines[1]).X) / 2,
@@ -769,8 +733,6 @@ namespace RD_AAOW
 			spriteBatch.Draw (startBack, Vector2.Zero, SnakeGameColors.White);
 			spriteBatch.Draw (snakeImg, startSnakeVector, SnakeGameColors.White);
 			spriteBatch.DrawString (bigFont, stStartLines[3], V1, SnakeGameColors.Gold);
-			/*spriteBatch.DrawString (midFont, S2, V2, SnakeGameColors.Silver);
-			spriteBatch.DrawString (midFont, S3, V3, SnakeGameColors.Silver);*/
 			spriteBatch.DrawString (defFont, stStartLines[0], V4, SnakeGameColors.DBlue);
 			spriteBatch.DrawString (defFont, stStartLines[1], V5, SnakeGameColors.DBlue);
 			spriteBatch.DrawString (defFont, stStartLines[2], V6, SnakeGameColors.DBlue);
@@ -790,12 +752,6 @@ namespace RD_AAOW
 				for (int i = 0; i < stFinishLines.Length; i++)
 					stFinishLines[i] = values[i];
 				}
-
-			/*string S1 = "ВЫ ПОБЕДИЛИ!!!",
-					S2 = "Ваши результаты:",
-					S3 = string.Format ("Всего очков:    {0,6:D}\nВсего съедено:   {1,5:D}",
-						score, eatenApples),
-					S4 = "Нажмите Пробел для продолжения";*/
 			string S02 = string.Format (stFinishLines[2], score);
 			string S03 = string.Format (stFinishLines[3], eatenApples);
 
@@ -832,11 +788,6 @@ namespace RD_AAOW
 				for (int i = 0; i < stExitLines.Length; i++)
 					stExitLines[i] = values[i];
 				}
-
-			/*string S1 = "Вы действительно хотите",
-					S2 = "завершить игру?",
-					S3 = "Нажмите Y, чтобы выйти из игры,",
-					S4 = "или N, чтобы вернуться";*/
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stExitLines[0]).X) / 2,
 						(BackBufferHeight - 230) / 2) + level.CameraPosition,
@@ -884,45 +835,6 @@ namespace RD_AAOW
 			showingServiceMessage = false;
 			}
 		private bool showingServiceMessage = false;
-
-		/*
-		/// <summary>
-		/// Метод отображает справку по игре
-		/// </summary>
-		private void ShowHelpMessage ()
-			{
-			string S1 = "Правила игры",
-					S2 = "   Змейке необходимо съесть все объекты на каждом уровне. Число объектов\n" +
-						 "и скорость змейки будет расти с каждым новым уровнем. Чтобы пройти игру с\n" +
-						 "максимальным количеством очков, ей достаточно не сталкиваться со стенками\n" +
-						 "уровня и с самой собой. За каждый съеденный объект даётся 10 очков, за\n" +
-						 "столкновение отнимается количество несъеденных объектов уровня. Пройдя\n" +
-						 "игру, можно начать её заново с уже заработанными очками",
-					S3 = "Удачи!!!",
-					S4 = "Управление",
-					S5 = "Пробел - пауза / возобновление / начало игры     S - включение / выключение звука\n" +
-						 "Стрелки - управление змейкой                     M - включение / выключение музыки\n" +
-						 "Esc - выход из игры / из справки";
-
-			Vector2 V1 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S1).X) / 2,
-						BackBufferHeight / 2 - 290),
-					V2 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S2).X) / 2,
-						BackBufferHeight / 2 - 240),
-					V3 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S3).X) / 2,
-						BackBufferHeight / 2 - 90),
-					V4 = new Vector2 ((BackBufferWidth - midFont.MeasureString (S4).X) / 2,
-						BackBufferHeight / 2 - 40),
-					V5 = new Vector2 ((BackBufferWidth - defFont.MeasureString (S5).X) / 2,
-						BackBufferHeight / 2 + 10);
-
-			spriteBatch.Draw (startBack, Vector2.Zero, SnakeGameColors.White);
-			spriteBatch.Draw (snakeImg, startSnakeVector, SnakeGameColors.White);
-			spriteBatch.DrawString (midFont, S1, V1, SnakeGameColors.Gold);
-			spriteBatch.DrawString (defFont, S2, V2, SnakeGameColors.DBlue);
-			spriteBatch.DrawString (defFont, S3, V3, SnakeGameColors.DBlue);
-			spriteBatch.DrawString (midFont, S4, V4, SnakeGameColors.Gold);
-			spriteBatch.DrawString (defFont, S5, V5, SnakeGameColors.DBlue);
-			}*/
 
 		/// <summary>
 		/// Метод отрисовывает уровень игры
@@ -1168,10 +1080,6 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод отрисовывает текстовую строку
 		/// </summary>
-		/// <param name="VFont"></param>
-		/// <param name="VString"></param>
-		/// <param name="VPosition"></param>
-		/// <param name="VColor"></param>
 		private void DrawShadowedString (SpriteFont VFont, string VString, Vector2 VPosition, Color VColor)
 			{
 			// Строка табуляций берётся потому, что в шрифте этот символ был

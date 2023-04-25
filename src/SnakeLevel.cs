@@ -185,7 +185,6 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Инициализирует уровень
 		/// </summary>
-		/// <param name="ServiceProvider"></param>
 		/// <param name="LevelNumber">Номер уровня</param>
 		public SnakeLevel (IServiceProvider ServiceProvider, int LevelNumber)
 			{
@@ -294,7 +293,6 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="Name">Название текстуры плитки</param>
 		/// <param name="Collision">Обработчик столкновений плитки</param>
-		/// <returns></returns>
 		private Tile LoadTile (string Name, TileCollision Collision)
 			{
 			return new Tile (Content.Load<Texture2D> ("Tiles/" + Name), Collision);
@@ -334,7 +332,6 @@ namespace RD_AAOW
 		/// Метод отрисовывает уровень
 		/// </summary>
 		/// <param name="VGameTime">Время игры</param>
-		/// <param name="VSpriteBatch"></param>
 		/// <param name="PlayerPosition0">Начальная позиция игрока</param>
 		public void Draw (GameTime VGameTime, SpriteBatch VSpriteBatch, Vector2 PlayerPosition0)
 			{
@@ -350,9 +347,6 @@ namespace RD_AAOW
 			ScrollCamera (VSpriteBatch.GraphicsDevice.Viewport, PlayerPosition0);
 			Matrix cameraTransform = Matrix.CreateTranslation (-cameraPosition.X, -cameraPosition.Y, 0.0f);
 
-			// Замена для XNA 4.0
-			/*spriteBatch.Begin (SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate,
-				SaveStateMode.None, cameraTransform);*/
 			VSpriteBatch.Begin (SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp,
 				DepthStencilState.None, RasterizerState.CullNone, null, cameraTransform);
 
@@ -382,8 +376,6 @@ namespace RD_AAOW
 		/// <summary>
 		/// Функция пересчёта камеры наблюдения
 		/// </summary>
-		/// <param name="VViewport"></param>
-		/// <param name="PlayerPosition0"></param>
 		private void ScrollCamera (Viewport VViewport, Vector2 PlayerPosition0)
 			{
 			// Относительные размеры поля, при выходе за которые начинается смещение камеры
