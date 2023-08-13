@@ -33,7 +33,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Высота окна
 		/// </summary>
-		public const int BackBufferHeight = Tile.Height * 24;
+		public const int BackBufferHeight = Tile.Height * 20;
 
 		// Основное состояние игры (начало|игра|конец)
 		private GameStatus gameStatus = GameStatus.Start;
@@ -111,7 +111,7 @@ namespace RD_AAOW
 			graphics = new GraphicsDeviceManager (this);
 			graphics.PreferredBackBufferWidth = BackBufferWidth;
 			graphics.PreferredBackBufferHeight = BackBufferHeight;
-			graphics.ToggleFullScreen ();
+			//graphics.ToggleFullScreen ();
 
 			// Задание content-директории игры
 			Content.RootDirectory = "Content/Snake";
