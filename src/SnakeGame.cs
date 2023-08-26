@@ -17,11 +17,21 @@ namespace RD_AAOW
 		// ПЕРЕМЕННЫЕ
 
 		// Драйвера игры
-		private GraphicsDeviceManager graphics;             // Графика
-		private SpriteBatch spriteBatch;                    // Sprite-отрисовка
-		private KeyboardState keyboardState;                // Состояние клавиатуры
-		private SpriteFont defFont, bigFont, midFont;       // Шрифты
-		private Random rnd = new Random ();                 // ГСЧ
+
+		// Графика
+		private GraphicsDeviceManager graphics;
+
+		// Sprite-отрисовка
+		private SpriteBatch spriteBatch;
+
+		// Состояние клавиатуры
+		private KeyboardState keyboardState;
+
+		// Шрифты
+		private SpriteFont defFont, bigFont, midFont;
+
+		// ГПСЧ
+		private Random rnd = new Random ();
 
 		// Размеры окна (игровое поле -  32 x 24 клеток; соотношение вынужденное, из-за fullscreen)
 
@@ -40,21 +50,42 @@ namespace RD_AAOW
 		// Начальный статус игры (статусы перечислены в Auxilitary.cs)
 
 		// Описатели уровня и окна сообщений
-		private SnakeLevel level;                           // Класс-описатель уровня
-		private int levelNumber = 0;                        // Номер текущего уровня
-		private bool isWorking = false;                     // Флаг паузы
-		private Texture2D startBack, snakeImg;              // Разные изображения на старте
-		private Vector2 startSnakeVector;                   // Змейка на старте
+
+		// Класс-описатель уровня
+		private SnakeLevel level;
+
+		// Номер текущего уровня
+		private int levelNumber = 0;
+
+		// Флаг паузы
+		private bool isWorking = false;
+
+		// Разные изображения на старте
+		private Texture2D startBack, snakeImg;
+
+		// Змейка на старте
+		private Vector2 startSnakeVector;
 
 		// Текущая позиция яблока и его объекты анимации
-		private Vector2 applePosition;                      // Текущая позиция
-		private Animation[] appleAnimation;                 // Изображение анимации
-		private AnimationPlayer appleAnimator;              // Объект-анимация
 
-		// Текущая позиция секций змейки, текущее направление движения
-		// и объекты анимации головы и тела
-		private List<Vector2> playerPosition = new List<Vector2> ();        // List позиций всех элементов змейки
-		private Vector2 playerTo;                                           // Направление движения змейки
+		// Текущая позиция
+		private Vector2 applePosition;
+
+		// Изображение анимации собираемых объектов
+		private Animation[] appleAnimation;
+
+		// Объект-анимация
+		private AnimationPlayer appleAnimator;
+
+		// Текущая позиция секций змейки, текущее направление движения и объекты анимации головы и тела
+
+		// List позиций всех элементов змейки
+		private List<Vector2> playerPosition = new List<Vector2> ();
+
+		// Направление движения змейки
+		private Vector2 playerTo;
+
+		// Анимации объектов
 		private Animation headAnimation, headRushAnimation, bodyAnimation;
 		private AnimationPlayer headAnimator, bodyAnimator;
 
@@ -62,11 +93,19 @@ namespace RD_AAOW
 		private Animation messageBack;
 		private AnimationPlayer messageBackAnimator;
 
-		// Звуковые эффекты и их параметры
-		private SoundEffect SCompleted, SFailed,            // Победа, поражение
-							SStart, SStop, SOnOff;          // Старт, пауза, звук off/on
-		private SoundEffect[] SAte;                         // Разные звуки съедения
-		private bool isSound = true, isMusic = true;        // Звук и музыка в игре on/off
+		// Звуковые эффекты
+
+		// Победа, поражение
+		private SoundEffect SCompleted, SFailed;
+
+		// Старт, пауза, звук off/on
+		private SoundEffect SStart, SStop, SOnOff;
+
+		// Разные звуки съедения
+		private SoundEffect[] SAte;
+
+		// Звук и музыка в игре on/off
+		private bool isSound = true, isMusic = true;
 
 		// Скорость змейки, количество яблок на уровне и параметр Alive
 		private float speed = 0;
@@ -75,32 +114,62 @@ namespace RD_AAOW
 
 		// Камень, на котором произошло столкновение, и коэффициенты предельного расстояния нестолкновения
 		private Vector2 collaptedOn;
-		private const float StoneOffs = 0.25f,
-							BodyOffs = Tile.Width * 0.4f,
-							AppleOffs = Tile.Width * 0.6f;
+		private const float StoneOffs = 0.25f;
+		private const float BodyOffs = Tile.Width * 0.4f;
+		private const float AppleOffs = Tile.Width * 0.6f;
 
-		// Очки
-		private int score = 0,                              // Выигрыш
-					currentScore = 0,                       // Очки в розыгрыше
-					eatenApples = 0;                        // Съедено яблок за всю игру
-		private const int SMult = 10;                       // Множитель для очков
+		// Счётчики игры
 
-		// Флаги отображения сообщений
-		private bool showLevelMsg = false,                  // Сообщение о начале уровня
-					 showLoseMsg = false,                   // Сообщение о прохождении уровня
-					 showWinMsg = false,                    // Сообщение о проигрыше
-					 showExitMsg = false;                   // Подтверждение выхода
+		// Выигрыш
+		private int score = 0;
+
+		// Очки в розыгрыше
+		private int currentScore = 0;
+
+		// Съедено яблок за всю игру
+		private int eatenApples = 0;
+
+		// Множитель для очков
+		private const int SMult = 10;
+
+		// Состояния игры
+
+		// Сообщение о начале уровня
+		private bool showLevelMsg = false;
+
+		// Сообщение о прохождении уровня
+		private bool showLoseMsg = false;
+
+		// Сообщение о проигрыше
+		private bool showWinMsg = false;
+
+		// Подтверждение выхода
+		private bool showExitMsg = false;
 
 		// Параметры компаса
-		private Texture2D compas;                       // Текстура
-		private float compasTurn = 0.0f;                // Угол поворота компаса
-		private Rectangle compasPosition, compasSize;   // Позиция и размер компаса
-		private Vector2 compasOffs;                     // Координаты предыдущего положения головы
+
+		// Текстура
+		private Texture2D compas;
+
+		// Угол поворота компаса
+		private float compasTurn = 0.0f;
+
+		// Позиция и размер компаса
+		private Rectangle compasPosition, compasSize;
+
+		// Координаты предыдущего положения головы
+		private Vector2 compasOffs;
 
 		// Согласователи клавиатуры
-		private int kbdDelay = 1,           // Пауза в Update-итерациях перед следующим опросом клавиатуры
-					kbdDelayTimer;          // Таймер для delay
-		private const int KbdDefDelay = 25; // Базовый delay при нажатии клавиши
+
+		// Пауза в Update-итерациях перед следующим опросом клавиатуры
+		private int kbdDelay = 1;
+
+		// Таймер для delay
+		private int kbdDelayTimer;
+
+		// Базовый delay при нажатии клавиши
+		private const int KbdDefDelay = 25;
 
 		/// <summary>
 		/// Конструктор. Инициализирует игру Змейка
@@ -223,8 +292,8 @@ namespace RD_AAOW
 				case GameStatus.Language:
 					// Движение по синусоиде
 					startSnakeVector.X += 2;
-					startSnakeVector.Y = BackBufferHeight - snakeImg.Height / 2 - 190 +
-						12 * (float)Math.Sin (0.007 * startSnakeVector.X + 0.5);
+					startSnakeVector.Y = BackBufferHeight - snakeImg.Height / 2 - 90 +
+						20 * (float)Math.Sin (0.007 * startSnakeVector.X + 0.5);
 
 					if (startSnakeVector.X > BackBufferWidth + snakeImg.Width)
 						startSnakeVector.X = -snakeImg.Width;
@@ -816,7 +885,6 @@ namespace RD_AAOW
 			showingServiceMessage = true;
 
 			// Блокировка отрисовки и запуск справки
-			graphics.ToggleFullScreen ();
 			spriteBatch.End ();
 
 			if (Language)
@@ -828,7 +896,6 @@ namespace RD_AAOW
 			spriteBatch.Begin ();
 			graphics.PreferredBackBufferWidth = BackBufferWidth;
 			graphics.PreferredBackBufferHeight = BackBufferHeight;
-			graphics.ToggleFullScreen ();
 
 			// Выход в меню
 			gameStatus = GameStatus.Start;
