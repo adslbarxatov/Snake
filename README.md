@@ -1,13 +1,22 @@
-# Snake v 2.2.11
-> PCC: 0236058B2E3CF88B
+# Snake
+
+## Description
+
+“Snake” minigame – a sample project for MonoGame Framework.
+A detailed description of the app is available on [its own page](https://adslbarxatov.github.io/Snake)
+
+&nbsp;
 
 
 
-Snake minigame – a sample project for MonoGame Framework
+## Описание
 
-Игра «Змейка» – учебный проект для MonoGame Framework
+Игра «Змейка» – учебный проект для MonoGame Framework.
+Подробное описание приложения доступно на [отдельной странице](https://adslbarxatov.github.io/Snake/ru)
 
-#
+&nbsp;
+
+
 
 ## Requirements / Требования
 
