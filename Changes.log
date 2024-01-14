@@ -1,5 +1,10 @@
 Snake game: changes log
 
+Version 2.3:
+• Fixed some graphics issues;
+• Fixed the fatal error in the win message;
+• Core updates have been applied
+
 Version 2.2.14:
 • Added a new version of offline help
 

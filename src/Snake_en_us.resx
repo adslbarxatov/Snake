@@ -121,7 +121,7 @@
     <value>Do you want	to exit the game?	Press [Y] to exit,	or [N] to continue</value>
   </data>
   <data name="FinishLines" xml:space="preserve">
-    <value>YOU WON!!!	Your results:	Total points: {0,6:D}	Total eaten: {1,5:D}	Press [Space] to continue</value>
+    <value>YOU WON!!!	Your results:	Total points: {0,6:D}	Total eaten: {0,5:D}	Press [Space] to continue</value>
   </data>
   <data name="LevelLines" xml:space="preserve">
     <value>LEVEL {0,2:D}	You need to eat {0,2:D} items	Press [Space] to start</value>

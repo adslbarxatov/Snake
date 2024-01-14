@@ -4,12 +4,12 @@ using System.Windows.Forms;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Точка входа приложения
+	/// РўРѕС‡РєР° РІС…РѕРґР° РїСЂРёР»РѕР¶РµРЅРёСЏ
 	/// </summary>
 	public static class SnakeProgram
 		{
 		private static string[] Pths = {
-			// Все фоновые изображения
+			// Р’СЃРµ С„РѕРЅРѕРІС‹Рµ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
 			"Background\\Back00.xnb",
 			"Background\\Back01.xnb",
 			"Background\\Back02.xnb",
@@ -17,15 +17,15 @@ namespace RD_AAOW
 			"Background\\StartBack.xnb",
 			"Background\\SnakeImg.xnb",
 
-            // Шрифты
-            "Font\\DefFont.xnb",
+			// РЁСЂРёС„С‚С‹
+			"Font\\DefFont.xnb",
 			"Font\\BigFont.xnb",
 			"Font\\MidFont.xnb",
 
-			// Фон сообщений
+			// Р¤РѕРЅ СЃРѕРѕР±С‰РµРЅРёР№
 			"Messages\\MessageBack.xnb",
 
-			// Все мелодии
+			// Р’СЃРµ РјРµР»РѕРґРёРё
 			"Sounds\\Ate1.xnb",
 			"Sounds\\Ate2.xnb",
 			"Sounds\\Ate3.xnb",
@@ -40,7 +40,7 @@ namespace RD_AAOW
 			"Sounds\\SStop.xnb",
 			"Sounds\\SStart.xnb",
 
-			// Все tiles
+			// Р’СЃРµ tiles
 			"Tiles\\Apple1.xnb",
 			"Tiles\\Apple2.xnb",
 			"Tiles\\Apple3.xnb",
@@ -67,38 +67,41 @@ namespace RD_AAOW
 			"Tiles\\Stone13.xnb"};
 
 		/// <summary>
-		/// Главная функция программы
+		/// Р“Р»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ РїСЂРѕРіСЂР°РјРјС‹
 		/// </summary>
-		/// <param name="args">Агрументы командной строки</param>
+		/// <param name="args">РђРіСЂСѓРјРµРЅС‚С‹ РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё</param>
 		public static void Main (string[] args)
 			{
-			// Инициализация
+			// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 			Application.EnableVisualStyles ();
 			Application.SetCompatibleTextRenderingDefault (false);
 
-			// Контроль XPUN
-			if (!Localization.IsXPUNClassAcceptable)
+			// РљРѕРЅС‚СЂРѕР»СЊ XPUN
+			if (!RDLocale.IsXPUNClassAcceptable)
 				return;
 
-			// Проверка запуска единственной копии
+			// РџСЂРѕРІРµСЂРєР° Р·Р°РїСѓСЃРєР° РµРґРёРЅСЃС‚РІРµРЅРЅРѕР№ РєРѕРїРёРё
 			if (!RDGenerics.IsAppInstanceUnique (true))
 				return;
 
-			// Отображение справки и запроса на принятие Политики
+			// РћС‚РѕР±СЂР°Р¶РµРЅРёРµ СЃРїСЂР°РІРєРё Рё Р·Р°РїСЂРѕСЃР° РЅР° РїСЂРёРЅСЏС‚РёРµ РџРѕР»РёС‚РёРєРё
 			if (!RDGenerics.AcceptEULA ())
 				return;
 			RDGenerics.ShowAbout (true);
 
-			// Контроль прав
+			// РљРѕРЅС‚СЂРѕР»СЊ РїСЂР°РІ
 			bool _ = RDGenerics.IsRegistryAccessible;
 
-			// Выполнение проверки на наличие всех необходимых файлов
-			for (int i = 0; i < Pths.Length; i++)
+			// Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРІРµСЂРєРё РЅР° РЅР°Р»РёС‡РёРµ РІСЃРµС… РЅРµРѕР±С…РѕРґРёРјС‹С… С„Р°Р№Р»РѕРІ
+			/*for (int i = 0; i < Pths.Length; i++)
 				if (!File.Exists (".\\Content\\Snake\\" + Pths[i]))
 					{
 					RDGenerics.LocalizedMessageBox (RDMessageTypes.Error_Center, "MissingFile");
 					return;
-					}
+					}*/
+			if (!RDGenerics.CheckLibraries (Pths, "Content\\" + ProgramDescription.AssemblyMainName +
+				"\\", true))
+				return;
 
 			using (SnakeGame game = new SnakeGame ())
 				game.Run ();

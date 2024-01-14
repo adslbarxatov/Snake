@@ -629,7 +629,7 @@ namespace RD_AAOW
 			// Сборка строк
 			if (string.IsNullOrWhiteSpace (stScoreLines[0]))
 				{
-				string[] values = Localization.GetText ("ScoreLines").Split (splitter,
+				string[] values = RDLocale.GetText ("ScoreLines").Split (splitter,
 					StringSplitOptions.RemoveEmptyEntries);
 				for (int i = 0; i < stScoreLines.Length; i++)
 					stScoreLines[i] = values[i];
@@ -703,7 +703,7 @@ namespace RD_AAOW
 			// Сборка строк
 			if (string.IsNullOrWhiteSpace (stLevelLines[0]))
 				{
-				string[] values = Localization.GetText ("LevelLines").Split (splitter,
+				string[] values = RDLocale.GetText ("LevelLines").Split (splitter,
 					StringSplitOptions.RemoveEmptyEntries);
 				for (int i = 0; i < stLevelLines.Length; i++)
 					stLevelLines[i] = values[i];
@@ -732,7 +732,7 @@ namespace RD_AAOW
 			// Сборка строк
 			if (string.IsNullOrWhiteSpace (stSuccessLines[0]))
 				{
-				string[] values = Localization.GetText ("SuccessLines").Split (splitter,
+				string[] values = RDLocale.GetText ("SuccessLines").Split (splitter,
 					StringSplitOptions.RemoveEmptyEntries);
 				for (int i = 0; i < stSuccessLines.Length; i++)
 					stSuccessLines[i] = values[i];
@@ -756,7 +756,7 @@ namespace RD_AAOW
 			// Сборка строк
 			if (string.IsNullOrWhiteSpace (stLoseLines[0]))
 				{
-				string[] values = Localization.GetText ("LoseLines").Split (splitter,
+				string[] values = RDLocale.GetText ("LoseLines").Split (splitter,
 					StringSplitOptions.RemoveEmptyEntries);
 				for (int i = 0; i < stLoseLines.Length; i++)
 					stLoseLines[i] = values[i];
@@ -783,7 +783,7 @@ namespace RD_AAOW
 			// Сборка строк
 			if (string.IsNullOrWhiteSpace (stStartLines[0]))
 				{
-				string[] values = Localization.GetText ("StartLines").Split (splitter,
+				string[] values = RDLocale.GetText ("StartLines").Split (splitter,
 					StringSplitOptions.RemoveEmptyEntries);
 				for (int i = 0; i < stStartLines.Length - 1; i++)
 					stStartLines[i] = values[i];
@@ -816,7 +816,7 @@ namespace RD_AAOW
 			// Сборка строк
 			if (string.IsNullOrWhiteSpace (stFinishLines[0]))
 				{
-				string[] values = Localization.GetText ("FinishLines").Split (splitter,
+				string[] values = RDLocale.GetText ("FinishLines").Split (splitter,
 					StringSplitOptions.RemoveEmptyEntries);
 				for (int i = 0; i < stFinishLines.Length; i++)
 					stFinishLines[i] = values[i];
@@ -837,10 +837,10 @@ namespace RD_AAOW
 
 			spriteBatch.Draw (startBack, Vector2.Zero, SnakeGameColors.White);
 			spriteBatch.DrawString (bigFont, stFinishLines[0], V1, SnakeGameColors.Gold);
-			spriteBatch.DrawString (midFont, stFinishLines[1], V2, SnakeGameColors.Brown);
-			spriteBatch.DrawString (midFont, S02, V3, SnakeGameColors.Brown);
-			spriteBatch.DrawString (midFont, S03, V3, SnakeGameColors.Brown);
-			spriteBatch.DrawString (defFont, stFinishLines[4], V4, SnakeGameColors.DBlue);
+			spriteBatch.DrawString (midFont, stFinishLines[1], V2, SnakeGameColors.Orange);
+			spriteBatch.DrawString (midFont, S02, V3, SnakeGameColors.Orange);
+			spriteBatch.DrawString (midFont, S03, V4, SnakeGameColors.Orange);
+			spriteBatch.DrawString (defFont, stFinishLines[4], V5, SnakeGameColors.DBlue);
 			}
 		private string[] stFinishLines = new string[5];
 
@@ -852,7 +852,7 @@ namespace RD_AAOW
 			// Сборка строк
 			if (string.IsNullOrWhiteSpace (stExitLines[0]))
 				{
-				string[] values = Localization.GetText ("ExitLines").Split (splitter,
+				string[] values = RDLocale.GetText ("ExitLines").Split (splitter,
 					StringSplitOptions.RemoveEmptyEntries);
 				for (int i = 0; i < stExitLines.Length; i++)
 					stExitLines[i] = values[i];

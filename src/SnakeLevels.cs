@@ -3,17 +3,17 @@ using Microsoft.Xna.Framework;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс описывает уровни игры
+	/// РљР»Р°СЃСЃ РѕРїРёСЃС‹РІР°РµС‚ СѓСЂРѕРІРЅРё РёРіСЂС‹
 	/// </summary>
 	public class LevelData
 		{
 		/// <summary>
-		/// Число уровней
+		/// Р§РёСЃР»Рѕ СѓСЂРѕРІРЅРµР№
 		/// </summary>
 		public const int LevelsQuantity = 12;
 
 		/// <summary>
-		/// Размер уровня
+		/// Р Р°Р·РјРµСЂ СѓСЂРѕРІРЅСЏ
 		/// </summary>
 		public Vector2 LevelSize
 			{
@@ -24,19 +24,19 @@ namespace RD_AAOW
 			}
 		private Vector2 levelSize;
 
-		// Текущее содержимое уровня и его номер
+		// РўРµРєСѓС‰РµРµ СЃРѕРґРµСЂР¶РёРјРѕРµ СѓСЂРѕРІРЅСЏ Рё РµРіРѕ РЅРѕРјРµСЂ
 		private string[] currentLevelMap;
 		private int currentLevelNumber = -1;
 
 		/// <summary>
-		/// Метод возвращает структуру уровней
+		/// РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂСѓРєС‚СѓСЂСѓ СѓСЂРѕРІРЅРµР№
 		/// </summary>
-		/// <param name="LevelNumber">Номер уровня</param>
-		/// <param name="X">Абсцисса плитки</param>
-		/// <param name="Y">Ордината плитки</param>
+		/// <param name="LevelNumber">РќРѕРјРµСЂ СѓСЂРѕРІРЅСЏ</param>
+		/// <param name="X">РђР±СЃС†РёСЃСЃР° РїР»РёС‚РєРё</param>
+		/// <param name="Y">РћСЂРґРёРЅР°С‚Р° РїР»РёС‚РєРё</param>
 		public char LevelsData (int LevelNumber, int X, int Y)
 			{
-			// Инициализировать, только если уровень изменился
+			// РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ, С‚РѕР»СЊРєРѕ РµСЃР»Рё СѓСЂРѕРІРµРЅСЊ РёР·РјРµРЅРёР»СЃСЏ
 			if (currentLevelNumber != LevelNumber)
 				InitLevelMap (LevelNumber);
 
@@ -44,14 +44,14 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод инициализирует карту уровня
+		/// РњРµС‚РѕРґ РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ РєР°СЂС‚Сѓ СѓСЂРѕРІРЅСЏ
 		/// </summary>
-		/// <param name="LevelNumber">Номер карты для инициализации</param>
+		/// <param name="LevelNumber">РќРѕРјРµСЂ РєР°СЂС‚С‹ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё</param>
 		private void InitLevelMap (int LevelNumber)
 			{
 			switch (LevelNumber)
 				{
-				// Уровень 1
+				// РЈСЂРѕРІРµРЅСЊ 1
 				case (0):
 					currentLevelMap = new string[]
 						{"ooooooooooooooooooooooooxxoooooo",
@@ -80,7 +80,7 @@ namespace RD_AAOW
 						 "ooooooooooooooo--ooooooooooooooo"};
 					break;
 
-				// Уровень 2
+				// РЈСЂРѕРІРµРЅСЊ 2
 				case (1):
 					currentLevelMap = new string[]
 						{"ooooooooooooooo--ooxxxxxxxxxxxxxxxxoo--ooooooo",
@@ -109,7 +109,7 @@ namespace RD_AAOW
 						 "ooooooooooooooo--oooooooooooooooooooo--ooooooo"};
 					break;
 
-				// Уровень 3
+				// РЈСЂРѕРІРµРЅСЊ 3
 				case (2):
 					currentLevelMap = new string[]
 						{"ooooooooooooooo--oooooooooooooxxxxxxx",
@@ -139,7 +139,7 @@ namespace RD_AAOW
 						 "ooooooooooooooooooooooooooooooooooooo"};
 					break;
 
-				// Уровень 4
+				// РЈСЂРѕРІРµРЅСЊ 4
 				case (3):
 					currentLevelMap = new string[]
 						{"ooooooooooooooooooooooooooooooooxxx",
@@ -173,7 +173,7 @@ namespace RD_AAOW
 						 "oooooooooooooooooooooooooooooooooxx"};
 					break;
 
-				// Уровень 5
+				// РЈСЂРѕРІРµРЅСЊ 5
 				case (4):
 					currentLevelMap = new string[]
 						{"oooooooooooooooooooooooooooooooooooooo",
@@ -202,7 +202,7 @@ namespace RD_AAOW
 						 "oooooooooooooooooooooooooooooooooooooo"};
 					break;
 
-				// Уровень 6
+				// РЈСЂРѕРІРµРЅСЊ 6
 				case (5):
 					currentLevelMap = new string[]
 						{"oo--oooooooooooooooooooooooooooo",
@@ -235,7 +235,7 @@ namespace RD_AAOW
 						 "oooooooooooooooooooooooooooooooo"};
 					break;
 
-				// Уровень 7
+				// РЈСЂРѕРІРµРЅСЊ 7
 				case (6):
 					currentLevelMap = new string[]
 						{"oooooooooooooooooooooooooooooooo",
@@ -264,7 +264,7 @@ namespace RD_AAOW
 						 "oooooooooooooooooooooooooooooooo"};
 					break;
 
-				// Уровень 8
+				// РЈСЂРѕРІРµРЅСЊ 8
 				case (7):
 					currentLevelMap = new string[]
 						{"xxxxooooooooooooooooooooooooooooooooooooooooooooooooooooooooxxxx",
@@ -295,7 +295,7 @@ namespace RD_AAOW
 						 "ooooooooooooooooooooooooooooooo--ooooooooooooooooooooooooooooooo"};
 					break;
 
-				// Уровень 9
+				// РЈСЂРѕРІРµРЅСЊ 9
 				case (8):
 					currentLevelMap = new string[]
 						{"oo--oooooooooooooooooooooooooooo",
@@ -324,7 +324,7 @@ namespace RD_AAOW
 						 "oooooooooooooooooooooooooooo--oo"};
 					break;
 
-				// Уровень 10
+				// РЈСЂРѕРІРµРЅСЊ 10
 				case (9):
 					currentLevelMap = new string[]
 						{"oo--ooooooooooooooooooooooooooooooo--oo",
@@ -357,7 +357,7 @@ namespace RD_AAOW
 						 "oooooooooooooooooo---oooooooooooooooooo"};
 					break;
 
-				// Уровень 11
+				// РЈСЂРѕРІРµРЅСЊ 11
 				case (10):
 					currentLevelMap = new string[]
 						{"oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
@@ -402,7 +402,7 @@ namespace RD_AAOW
 						 "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"};
 					break;
 
-				// Уровень 12
+				// РЈСЂРѕРІРµРЅСЊ 12
 				case (11):
 					currentLevelMap = new string[]
 						{"oooooooo--ooooo--ooooo--oooooooo",

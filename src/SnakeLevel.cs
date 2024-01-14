@@ -337,7 +337,7 @@ namespace RD_AAOW
 			{
 			// Фон
 			for (int xf = 0; xf < 2 * SnakeGame.BackBufferWidth / background.Width; xf++)
-				for (int yf = 0; yf < 2 * SnakeGame.BackBufferHeight / background.Height; yf++)
+				for (int yf = 0; yf < 3 * SnakeGame.BackBufferHeight / background.Height; yf++)
 					VSpriteBatch.Draw (background, -cameraPosition + new Vector2 (background.Width * xf,
 						background.Height * yf), SnakeGameColors.White);
 
