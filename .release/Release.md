@@ -1,5 +1,4 @@
-_Changes for v 2.3_:
+_Changes for v 2.3.1_:
 - Fixed some graphics issues;
 - Fixed the fatal error in the win message;
-- Core updates have been applied;
-- Added a new version of offline help
+- Core updates have been applied
