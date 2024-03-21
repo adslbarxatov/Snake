@@ -1,4 +1,4 @@
-_Changes for v 2.3.1_:
+_Changes for v 2.3.2_:
+- Update for XPUN has been applied;
 - Fixed some graphics issues;
-- Fixed the fatal error in the win message;
-- Core updates have been applied
+- Fixed the fatal error in the win message
