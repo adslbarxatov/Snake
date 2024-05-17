@@ -100,14 +100,17 @@ namespace RD_AAOW
 			}
 		private Vector2 levelSize;
 
-		private Texture2D background;                   // Фон уровня
-		private Random rnd = new Random ();             // ГСЧ
-		private int currentTextureNumber;               // Номер текущей группы текстур фона (фон + тип камней)
+		// Фон уровня
+		private Texture2D background;
+		/*private Random rnd = new Random ();             // ГСЧ*/
+
+		// Номер текущей группы текстур фона (фон + тип камней)
+		private int currentTextureNumber;
 
 		// Количественные константы для текстур фона и камней
-		private const int backgroundVariants = 4,
-						  stonesVariants = 4,
-						  stonesTypes = 2;
+		private const int backgroundVariants = 4;
+		private const int stonesVariants = 4;
+		private const int stonesTypes = 2;
 
 		// Параметры, читаемые из уровня и отправляемые в класс игры
 		private Vector2 playerTo, playerStartPosition;
@@ -189,7 +192,7 @@ namespace RD_AAOW
 		public SnakeLevel (IServiceProvider ServiceProvider, int LevelNumber)
 			{
 			// Генерация нового номера фонового изображения
-			currentTextureNumber = rnd.Next (backgroundVariants);
+			currentTextureNumber = RDGenerics.RND.Next (backgroundVariants);
 
 			// Создание контент-менеджера для текущего уровня
 			content = new ContentManager (ServiceProvider, "Content/Snake");
@@ -246,7 +249,7 @@ namespace RD_AAOW
 				// Камни
 				case 'o':
 					return LoadTile (string.Format ("Stone{0:D}{1:D}", currentTextureNumber % stonesTypes,
-						rnd.Next (stonesVariants)), TileCollision.Stone);
+						RDGenerics.RND.Next (stonesVariants)), TileCollision.Stone);
 				case '-':
 					return LoadTile ("DoorH", TileCollision.Stone);
 				case '|':

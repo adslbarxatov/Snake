@@ -30,8 +30,8 @@ namespace RD_AAOW
 		// Шрифты
 		private SpriteFont defFont, bigFont, midFont;
 
-		// ГПСЧ
-		private Random rnd = new Random ();
+		/*// ГПСЧ
+		private Random rnd = new Random ();*/
 
 		// Размеры окна (игровое поле -  32 x 24 клеток; соотношение вынужденное, из-за fullscreen)
 
@@ -371,7 +371,7 @@ namespace RD_AAOW
 						{
 						// Звук
 						if (isSound)
-							SAte[rnd.Next (SAte.Length)].Play ();
+							SAte[RDGenerics.RND.Next (SAte.Length)].Play ();
 
 						// Генерация нового яблока (если игра не окончена)
 						NewApple ();
@@ -1134,14 +1134,14 @@ namespace RD_AAOW
 			// Генерация новой позиции, не попадающей на камни и игрока
 			do
 				{
-				NewV.X = rnd.Next ((int)(level.LevelSize.X * Tile.Width));
-				NewV.Y = rnd.Next ((int)(level.LevelSize.Y * Tile.Height));
+				NewV.X = RDGenerics.RND.Next ((int)(level.LevelSize.X * Tile.Width));
+				NewV.Y = RDGenerics.RND.Next ((int)(level.LevelSize.Y * Tile.Height));
 				} while (IsCollapted (NewV, true));
 
 			applePosition = NewV;
 
 			// Выбор новой анимации
-			appleAnimator.PlayAnimation (appleAnimation[rnd.Next (appleAnimation.Length)]);
+			appleAnimator.PlayAnimation (appleAnimation[RDGenerics.RND.Next (appleAnimation.Length)]);
 			}
 
 		/// <summary>
