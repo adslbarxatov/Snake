@@ -90,7 +90,6 @@ namespace RD_AAOW
 			RDGenerics.ShowAbout (true);
 
 			// Контроль прав
-			/*bool _ = RDGenerics.IsRegistryAccessible;*/
 			if (!RDGenerics.AppHasAccessRights (true, true))
 				return;
 

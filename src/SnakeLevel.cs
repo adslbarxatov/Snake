@@ -102,7 +102,6 @@ namespace RD_AAOW
 
 		// Фон уровня
 		private Texture2D background;
-		/*private Random rnd = new Random ();             // ГСЧ*/
 
 		// Номер текущей группы текстур фона (фон + тип камней)
 		private int currentTextureNumber;

@@ -30,9 +30,6 @@ namespace RD_AAOW
 		// Шрифты
 		private SpriteFont defFont, bigFont, midFont;
 
-		/*// ГПСЧ
-		private Random rnd = new Random ();*/
-
 		// Размеры окна (игровое поле -  32 x 24 клеток; соотношение вынужденное, из-за fullscreen)
 
 		/// <summary>
@@ -53,9 +50,6 @@ namespace RD_AAOW
 
 		// Класс-описатель уровня
 		private SnakeLevel level;
-
-		// Номер текущего уровня
-		private int levelNumber = 0;
 
 		// Флаг паузы
 		private bool isWorking = false;
@@ -104,9 +98,6 @@ namespace RD_AAOW
 		// Разные звуки съедения
 		private SoundEffect[] SAte;
 
-		// Звук и музыка в игре on/off
-		private bool isSound = true, isMusic = true;
-
 		// Скорость змейки, количество яблок на уровне и параметр Alive
 		private float speed = 0;
 		private int applesQuantity = 0;
@@ -120,14 +111,8 @@ namespace RD_AAOW
 
 		// Счётчики игры
 
-		// Выигрыш
-		private int score = 0;
-
 		// Очки в розыгрыше
 		private int currentScore = 0;
-
-		// Съедено яблок за всю игру
-		private int eatenApples = 0;
 
 		// Множитель для очков
 		private const int SMult = 10;
@@ -249,13 +234,13 @@ namespace RD_AAOW
 			compas = Content.Load<Texture2D> ("Tiles/Compas");
 			compasPosition = compasSize = new Rectangle (0, 0, compas.Width, compas.Height);
 
-			// ЧТЕНИЕ НАСТРОЕК И РЕЗУЛЬТАТОВ ИГРЫ
-			GameSettings (false);
-
 			// НАСТРОЙКА МУЗЫКИ
 			MediaPlayer.IsRepeating = true;
-			if (isMusic)
+			if (SnakeSettings.MusicEnabled > 0)
+				{
+				MediaPlayer.Volume = SnakeSettings.MusicVolume;
 				MediaPlayer.Play (Content.Load<Song> ("Sounds/Music2"));
+				}
 
 			// Инициализация
 			base.Initialize ();
@@ -327,11 +312,11 @@ namespace RD_AAOW
 						{
 						// Звук
 						MediaPlayer.Stop ();
-						if (isSound)
-							SCompleted.Play ();
+						if (SnakeSettings.SoundsEnabled > 0)
+							SCompleted.Play (SnakeSettings.SoundVolume, 0, 0);
 
 						// Пересчёт очков
-						score += currentScore;
+						SnakeSettings.GameScore += (uint)currentScore;
 						currentScore = 0;
 
 						// Отображение сообщения
@@ -348,16 +333,16 @@ namespace RD_AAOW
 						{
 						// Звук
 						MediaPlayer.Stop ();
-						if (isSound)
-							SFailed.Play ();
+						if (SnakeSettings.SoundsEnabled > 0)
+							SFailed.Play (SnakeSettings.SoundVolume, 0, 0);
 
 						// Переключение состояния игры
 						isAlive = isWorking = false;
-						levelNumber--;
+						SnakeSettings.LevelNumber--;
 						headAnimator.PlayAnimation (headRushAnimation);
 
 						// Пересчёт очков
-						score += currentScore / SMult - applesQuantity;
+						SnakeSettings.GameScore += (uint)(currentScore / SMult - applesQuantity);
 						currentScore = 0;
 
 						// Отображение сообщения
@@ -370,15 +355,15 @@ namespace RD_AAOW
 					if (IsAte ())
 						{
 						// Звук
-						if (isSound)
-							SAte[RDGenerics.RND.Next (SAte.Length)].Play ();
+						if (SnakeSettings.SoundsEnabled > 0)
+							SAte[RDGenerics.RND.Next (SAte.Length)].Play (SnakeSettings.SoundVolume, 0, 0);
 
 						// Генерация нового яблока (если игра не окончена)
 						NewApple ();
 
 						// Наращивание текущего числа очков и всего съеденных ябок
 						currentScore += SMult;
-						eatenApples++;
+						SnakeSettings.ApplesEaten++;
 
 						// Добавление части змейки
 						playerPosition.Add (playerPosition[playerPosition.Count - 1]);
@@ -405,28 +390,30 @@ namespace RD_AAOW
 			// Настройки звука
 			if (!showExitMsg)
 				{
-				if (keyboardState.IsKeyDown (Keys.S))       // Sound on/off
+				// Sound on/off
+				if (keyboardState.IsKeyDown (Keys.S))
 					{
-					isSound = !isSound;
-					SOnOff.Play ();
+					SnakeSettings.SoundsEnabled++;
+					SOnOff.Play (SnakeSettings.SoundVolume, 0, 0);
 
 					// Была нажата клавиша
 					return true;
 					}
 
+				// Music on/off
 				if (keyboardState.IsKeyDown (Keys.M))
 					{
-					if (isMusic)                            // Music on/off
+					SnakeSettings.MusicEnabled++;
+					if (SnakeSettings.MusicEnabled == 0)
 						{
-						isMusic = false;
 						MediaPlayer.Stop ();
 						}
 					else
 						{
-						isMusic = true;
+						MediaPlayer.Volume = SnakeSettings.MusicVolume;
 						MediaPlayer.Play (Content.Load<Song> ("Sounds/Music1"));
 						}
-					SOnOff.Play ();
+					SOnOff.Play (SnakeSettings.SoundVolume, 0, 0);
 
 					return true;
 					}
@@ -464,7 +451,7 @@ namespace RD_AAOW
 						gameStatus = GameStatus.Playing;
 
 						// Загрузка уровня
-						levelNumber--;
+						SnakeSettings.LevelNumber--;
 						LoadNextLevel ();
 
 						return true;
@@ -498,8 +485,8 @@ namespace RD_AAOW
 								{
 								isWorking = false;
 
-								if (isSound)
-									SStop.Play ();
+								if (SnakeSettings.SoundsEnabled > 0)
+									SStop.Play (SnakeSettings.SoundVolume, 0, 0);
 								}
 
 							// Continue
@@ -508,8 +495,8 @@ namespace RD_AAOW
 								showLevelMsg = false;
 								isWorking = true;
 
-								if (isSound)
-									SStart.Play ();
+								if (SnakeSettings.SoundsEnabled > 0)
+									SStart.Play (SnakeSettings.SoundVolume, 0, 0);
 								}
 
 							return true;
@@ -533,8 +520,8 @@ namespace RD_AAOW
 							showExitMsg = true;
 
 							// Звук
-							if (isSound)
-								SOnOff.Play ();
+							if (SnakeSettings.SoundsEnabled > 0)
+								SOnOff.Play (SnakeSettings.SoundVolume, 0, 0);
 
 							return true;
 							}
@@ -636,10 +623,10 @@ namespace RD_AAOW
 				}
 
 			string S00 = string.Format (stScoreLines[0], currentScore);
-			string S01 = string.Format (stScoreLines[1], score);
-			string S02 = string.Format (stScoreLines[2], eatenApples);
+			string S01 = string.Format (stScoreLines[1], SnakeSettings.GameScore);
+			string S02 = string.Format (stScoreLines[2], SnakeSettings.ApplesEaten);
 			string S03 = string.Format (stScoreLines[3], applesQuantity - currentScore / SMult);
-			string S04 = (isWorking ? string.Format (stScoreLines[4], levelNumber + 1) : stScoreLines[5]);
+			string S04 = (isWorking ? string.Format (stScoreLines[4], SnakeSettings.LevelNumber + 1) : stScoreLines[5]);
 
 			float StrUp = Tile.Height * 0.15f,
 				  StrDown = BackBufferHeight - Tile.Height * 0.8f;
@@ -663,12 +650,12 @@ namespace RD_AAOW
 				DrawShadowedString (defFont, S03, V5, SnakeGameColors.Silver);
 
 			// Если есть музыка или звук, выводить соответствующий знак
-			if (isMusic)
+			if (SnakeSettings.MusicEnabled > 0)
 				DrawShadowedString (defFont, "[\x266B]", V6, SnakeGameColors.Yellow);
 			else
 				DrawShadowedString (defFont, "[\x266B]", V6, SnakeGameColors.Black);
 
-			if (isSound)
+			if (SnakeSettings.SoundsEnabled > 0)
 				DrawShadowedString (defFont, "[\x266A]", V7, SnakeGameColors.Yellow);
 			else
 				DrawShadowedString (defFont, "[\x266A]", V7, SnakeGameColors.Black);
@@ -708,7 +695,7 @@ namespace RD_AAOW
 				for (int i = 0; i < stLevelLines.Length; i++)
 					stLevelLines[i] = values[i];
 				}
-			string S00 = string.Format (stLevelLines[0], levelNumber + 1);
+			string S00 = string.Format (stLevelLines[0], SnakeSettings.LevelNumber + 1);
 			string S01 = string.Format (stLevelLines[1], applesQuantity);
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (S00).X) / 2,
@@ -821,8 +808,8 @@ namespace RD_AAOW
 				for (int i = 0; i < stFinishLines.Length; i++)
 					stFinishLines[i] = values[i];
 				}
-			string S02 = string.Format (stFinishLines[2], score);
-			string S03 = string.Format (stFinishLines[3], eatenApples);
+			string S02 = string.Format (stFinishLines[2], SnakeSettings.GameScore);
+			string S03 = string.Format (stFinishLines[3], SnakeSettings.ApplesEaten);
 
 			Vector2 V1 = new Vector2 ((BackBufferWidth - bigFont.MeasureString (stFinishLines[0]).X) / 2,
 						(BackBufferHeight - 250) / 2),
@@ -1010,28 +997,34 @@ namespace RD_AAOW
 			{
 			// Запуск фоновой мелодии
 			MediaPlayer.Stop ();
-			if (isMusic)
+			if (SnakeSettings.MusicEnabled > 0)
+				{
+				MediaPlayer.Volume = SnakeSettings.MusicVolume;
 				MediaPlayer.Play (Content.Load<Song> ("Sounds/Music1"));
+				}
 
 			// Поиск следующей структуры уровня
 			while (true)
 				{
 				// Поиск С АВТОСМЕЩЕНИЕМ НА СЛЕДУЮЩИЙ УРОВЕНЬ
-				++levelNumber;
-				if (levelNumber < LevelData.LevelsQuantity)
+				++SnakeSettings.LevelNumber;
+				if (SnakeSettings.LevelNumber < LevelData.LevelsQuantity)
 					break;
 
 				// Перезапуск с нулевого уровня в конце игры
-				levelNumber = -1;
+				SnakeSettings.LevelNumber = -1;
 				gameStatus = GameStatus.Finish;
-				if (isMusic)
+				if (SnakeSettings.MusicEnabled > 0)
+					{
+					MediaPlayer.Volume = SnakeSettings.MusicVolume;
 					MediaPlayer.Play (Content.Load<Song> ("Sounds/Music2"));
+					}
 				}
 
 			// Выгрузка предыдущего уровня и загрузка нового
 			if (level != null)
 				level.Dispose ();
-			level = new SnakeLevel (Services, levelNumber);
+			level = new SnakeLevel (Services, (int)SnakeSettings.LevelNumber);
 
 			// СТАРТОВОЕ СОСТОЯНИЕ ИГРЫ
 			// Чтение параметров уровня
@@ -1062,9 +1055,6 @@ namespace RD_AAOW
 			pp2.X -= Tile.Width * Math.Sign (playerTo.X);
 			pp2.Y -= Tile.Height * Math.Sign (playerTo.Y);
 			playerPosition.Add (pp2);
-
-			// Запись настроек и результатов игры (в зависимости от того, есть они или нет)
-			GameSettings (true);
 			}
 
 		/////////////////////////////////////////////////////////////////////////////////
@@ -1157,34 +1147,6 @@ namespace RD_AAOW
 
 			spriteBatch.DrawString (VFont, SubStr.Remove (VString.Length), VPosition, SnakeGameColors.DGreen);
 			spriteBatch.DrawString (VFont, VString, VPosition, VColor);
-			}
-
-		/// <summary>
-		/// Метод считывает / сохраняет настройки игры
-		/// </summary>
-		/// <param name="Write">Флаг указывает на режим записи</param>
-		private void GameSettings (bool Write)
-			{
-			if (Write)
-				{
-				RDGenerics.SetAppSettingsValue ("Level", levelNumber.ToString ());
-				RDGenerics.SetAppSettingsValue ("Score", score.ToString ());
-				RDGenerics.SetAppSettingsValue ("EatenApples", eatenApples.ToString ());
-				RDGenerics.SetAppSettingsValue ("Music", isMusic.ToString ());
-				RDGenerics.SetAppSettingsValue ("Sound", isSound.ToString ());
-				}
-			else
-				{
-				try
-					{
-					levelNumber = int.Parse (RDGenerics.GetAppSettingsValue ("Level"));
-					score = int.Parse (RDGenerics.GetAppSettingsValue ("Score"));
-					eatenApples = int.Parse (RDGenerics.GetAppSettingsValue ("EatenApples"));
-					isMusic = bool.Parse (RDGenerics.GetAppSettingsValue ("Music"));
-					isSound = bool.Parse (RDGenerics.GetAppSettingsValue ("Sound"));
-					}
-				catch { }
-				}
 			}
 		}
 	}
